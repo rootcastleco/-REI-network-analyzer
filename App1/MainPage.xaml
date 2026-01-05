@@ -6,74 +6,105 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="#000000"
+    Background="#0A0A0A"
     Loaded="MainPage_Loaded">
 
     <Page.Resources>
+        <!-- Daha görünür stiller -->
         <Style x:Key="MatrixTextStyle" TargetType="TextBlock">
             <Setter Property="Foreground" Value="#00FF00"/>
             <Setter Property="FontFamily" Value="Consolas"/>
+            <Setter Property="FontSize" Value="12"/>
         </Style>
         <Style x:Key="MatrixLabelStyle" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="#00AA00"/>
+            <Setter Property="Foreground" Value="#00DD00"/>
             <Setter Property="FontFamily" Value="Consolas"/>
             <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="13"/>
         </Style>
         <Style x:Key="MatrixBorderStyle" TargetType="Border">
-            <Setter Property="Background" Value="#0A0A0A"/>
-            <Setter Property="BorderBrush" Value="#00FF00"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="CornerRadius" Value="2"/>
+            <Setter Property="Background" Value="#0D0D0D"/>
+            <Setter Property="BorderBrush" Value="#00AA00"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Padding" Value="10"/>
         </Style>
         <Style x:Key="MatrixButtonStyle" TargetType="Button">
-            <Setter Property="Background" Value="#001100"/>
+            <Setter Property="Background" Value="#001800"/>
             <Setter Property="Foreground" Value="#00FF00"/>
             <Setter Property="BorderBrush" Value="#00FF00"/>
-            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderThickness" Value="2"/>
             <Setter Property="FontFamily" Value="Consolas"/>
-            <Setter Property="Padding" Value="6,2"/>
-            <Setter Property="MinWidth" Value="40"/>
-            <Setter Property="FontSize" Value="9"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="MinWidth" Value="60"/>
+            <Setter Property="MinHeight" Value="36"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="CornerRadius" Value="4"/>
         </Style>
         <Style x:Key="MatrixComboBoxStyle" TargetType="ComboBox">
-            <Setter Property="Background" Value="#001100"/>
+            <Setter Property="Background" Value="#001800"/>
             <Setter Property="Foreground" Value="#00FF00"/>
             <Setter Property="BorderBrush" Value="#00FF00"/>
+            <Setter Property="BorderThickness" Value="2"/>
             <Setter Property="FontFamily" Value="Consolas"/>
-            <Setter Property="FontSize" Value="9"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="MinHeight" Value="36"/>
+            <Setter Property="CornerRadius" Value="4"/>
         </Style>
         <Style x:Key="MatrixTextBoxStyle" TargetType="TextBox">
-            <Setter Property="Background" Value="#001100"/>
+            <Setter Property="Background" Value="#001800"/>
             <Setter Property="Foreground" Value="#00FF00"/>
-            <Setter Property="BorderBrush" Value="#00FF00"/>
+            <Setter Property="BorderBrush" Value="#00AA00"/>
+            <Setter Property="BorderThickness" Value="2"/>
             <Setter Property="FontFamily" Value="Consolas"/>
-            <Setter Property="Padding" Value="3,1"/>
-            <Setter Property="FontSize" Value="9"/>
+            <Setter Property="Padding" Value="8,6"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="MinHeight" Value="36"/>
+            <Setter Property="CornerRadius" Value="4"/>
         </Style>
         <Style x:Key="AlertButtonStyle" TargetType="Button">
-            <Setter Property="Background" Value="#110000"/>
+            <Setter Property="Background" Value="#1A0000"/>
             <Setter Property="Foreground" Value="#FF6600"/>
             <Setter Property="BorderBrush" Value="#FF6600"/>
-            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderThickness" Value="2"/>
             <Setter Property="FontFamily" Value="Consolas"/>
-            <Setter Property="Padding" Value="4,2"/>
-            <Setter Property="FontSize" Value="8"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="MinHeight" Value="36"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="CornerRadius" Value="4"/>
         </Style>
         <Style x:Key="BlueButtonStyle" TargetType="Button">
-            <Setter Property="Background" Value="#000022"/>
+            <Setter Property="Background" Value="#000033"/>
             <Setter Property="Foreground" Value="#4488FF"/>
             <Setter Property="BorderBrush" Value="#4488FF"/>
-            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderThickness" Value="2"/>
             <Setter Property="FontFamily" Value="Consolas"/>
-            <Setter Property="Padding" Value="4,2"/>
-            <Setter Property="FontSize" Value="8"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="MinHeight" Value="36"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="CornerRadius" Value="4"/>
+        </Style>
+        <Style x:Key="AIButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#001133"/>
+            <Setter Property="Foreground" Value="#00CCFF"/>
+            <Setter Property="BorderBrush" Value="#00CCFF"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="FontFamily" Value="Consolas"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Padding" Value="10,6"/>
+            <Setter Property="MinHeight" Value="32"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="CornerRadius" Value="4"/>
         </Style>
     </Page.Resources>
 
-    <Grid Background="#000000">
+    <Grid Background="#0A0A0A">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="280"/>
+            <ColumnDefinition Width="380"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -81,8 +112,8 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Header -->
-        <Border Grid.ColumnSpan="2" Background="#001100" BorderBrush="#00FF00" BorderThickness="0,0,0,2" Padding="8,4">
+        <!-- Header - Daha büyük ve görünür -->
+        <Border Grid.ColumnSpan="2" Background="#001500" BorderBrush="#00FF00" BorderThickness="0,0,0,3" Padding="15,10">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -90,170 +121,185 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <StackPanel>
-                    <TextBlock Text="ROOTCASTLE NETWORK MONITOR" FontSize="14" FontWeight="Bold" Foreground="#00FF00" FontFamily="Consolas"/>
-                    <TextBlock Text="Powered by /REI • Enterprise Edition" FontSize="8" Foreground="#006600" FontFamily="Consolas"/>
+                    <TextBlock Text="ROOTCASTLE NETWORK MONITOR" FontSize="20" FontWeight="Bold" Foreground="#00FF00" FontFamily="Consolas"/>
+                    <TextBlock Text="Powered by /REI • Enterprise Edition • SOFIA AI Inside" FontSize="11" Foreground="#008800" FontFamily="Consolas"/>
                 </StackPanel>
-                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <ComboBox x:Name="InterfaceComboBox" Width="140" Style="{StaticResource MatrixComboBoxStyle}" PlaceholderText="[INTERFACE]" SelectionChanged="InterfaceComboBox_SelectionChanged"/>
-                    <Button Content="▶" x:Name="StartMonitorButton" Style="{StaticResource MatrixButtonStyle}" Margin="3,0" Click="StartMonitorButton_Click"/>
-                    <Button Content="⚡" Style="{StaticResource MatrixButtonStyle}" Click="AIAnalyzeButton_Click" ToolTipService.ToolTip="SOFIA AI"/>
-                    <Button Content="🔍" Style="{StaticResource AlertButtonStyle}" Margin="3,0" Click="NmapMenuButton_Click" ToolTipService.ToolTip="NMAP"/>
-                    <Button Content="📊" Style="{StaticResource BlueButtonStyle}" Click="ExportReportButton_Click" ToolTipService.ToolTip="Export"/>
-                    <Button Content="🔒" Style="{StaticResource MatrixButtonStyle}" Margin="3,0" Click="SecurityDashboardButton_Click" ToolTipService.ToolTip="Security"/>
-                    <Button Content="📡" Style="{StaticResource BlueButtonStyle}" Click="TopologyButton_Click" ToolTipService.ToolTip="Topology"/>
-                    <Button Content="⚙" Style="{StaticResource MatrixButtonStyle}" Margin="3,0" Click="AdvancedSettingsButton_Click" ToolTipService.ToolTip="Settings"/>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="8">
+                    <ComboBox x:Name="InterfaceComboBox" Width="180" Style="{StaticResource MatrixComboBoxStyle}" PlaceholderText="[SELECT INTERFACE]" SelectionChanged="InterfaceComboBox_SelectionChanged"/>
+                    <Button Content="▶ START" x:Name="StartMonitorButton" Style="{StaticResource MatrixButtonStyle}" Click="StartMonitorButton_Click"/>
+                    <Button Content="🧠 AI" Style="{StaticResource AIButtonStyle}" Click="AIAnalyzeButton_Click" ToolTipService.ToolTip="SOFIA AI Analysis"/>
+                    <Button Content="🔍 SCAN" Style="{StaticResource AlertButtonStyle}" Click="NmapMenuButton_Click" ToolTipService.ToolTip="NMAP Scanner"/>
+                    <Button Content="📊 EXPORT" Style="{StaticResource BlueButtonStyle}" Click="ExportReportButton_Click" ToolTipService.ToolTip="Export Report"/>
+                    <Button Content="🔒" Style="{StaticResource MatrixButtonStyle}" Click="SecurityDashboardButton_Click" ToolTipService.ToolTip="Security"/>
+                    <Button Content="⚙️" Style="{StaticResource MatrixButtonStyle}" Click="AdvancedSettingsButton_Click" ToolTipService.ToolTip="Settings"/>
                 </StackPanel>
-                <StackPanel Grid.Column="2" Orientation="Horizontal">
-                    <Border x:Name="StatusIndicator" Width="10" Height="10" CornerRadius="5" Background="#FFAA00" Margin="0,0,4,0"/>
-                    <TextBlock x:Name="PacketCountText" Text="0" Foreground="#00FFFF" FontFamily="Consolas" FontSize="9" VerticalAlignment="Center"/>
-                    <TextBlock Text=" pkt" Foreground="#006666" FontFamily="Consolas" FontSize="8" VerticalAlignment="Center"/>
+                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock x:Name="MonitorStatusText" Text="●" Foreground="#FFAA00" FontFamily="Consolas" FontSize="20" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <StackPanel>
+                        <TextBlock x:Name="PacketCountText" Text="0" Foreground="#00FFFF" FontFamily="Consolas" FontSize="16" FontWeight="Bold"/>
+                        <TextBlock Text="packets" Foreground="#006666" FontFamily="Consolas" FontSize="10"/>
+                    </StackPanel>
                 </StackPanel>
             </Grid>
         </Border>
 
-        <!-- Main Content with Tab-like sections -->
-        <Pivot Grid.Row="1" Margin="4" x:Name="MainPivot" Style="{x:Null}">
+        <!-- Main Content -->
+        <Pivot Grid.Row="1" Margin="8" x:Name="MainPivot">
             <Pivot.HeaderTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding}" Foreground="#00FF00" FontFamily="Consolas" FontSize="10"/>
+                    <TextBlock Text="{Binding}" Foreground="#00FF00" FontFamily="Consolas" FontSize="14" FontWeight="Bold"/>
                 </DataTemplate>
             </Pivot.HeaderTemplate>
 
             <!-- TAB 1: MONITOR -->
-            <PivotItem Header="MONITOR">
+            <PivotItem Header="📡 MONITOR">
                 <ScrollViewer>
-                    <StackPanel Margin="2">
+                    <StackPanel Margin="4" Spacing="8">
                         <!-- Live Traffic Graph -->
-                        <Border Style="{StaticResource MatrixBorderStyle}" Padding="6" Margin="0,0,0,4">
+                        <Border Style="{StaticResource MatrixBorderStyle}">
                             <StackPanel>
-                                <Grid>
-                                    <TextBlock Text="► LIVE TRAFFIC" FontSize="9" Style="{StaticResource MatrixLabelStyle}"/>
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                        <TextBlock x:Name="TrafficRateText" Text="0 B/s" Foreground="#00FFFF" FontFamily="Consolas" FontSize="8"/>
-                                        <TextBlock Text=" | " Foreground="#004400" FontFamily="Consolas" FontSize="8"/>
-                                        <TextBlock x:Name="BandwidthText" Text="BW: 0%" Foreground="#FFAA00" FontFamily="Consolas" FontSize="8"/>
+                                <Grid Margin="0,0,0,8">
+                                    <TextBlock Text="► LIVE TRAFFIC" FontSize="14" Style="{StaticResource MatrixLabelStyle}"/>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="15">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="Rate: " Foreground="#666666" FontFamily="Consolas" FontSize="12"/>
+                                            <TextBlock x:Name="TrafficRateText" Text="0 B/s" Foreground="#00FFFF" FontFamily="Consolas" FontSize="12" FontWeight="Bold"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="BW: " Foreground="#666666" FontFamily="Consolas" FontSize="12"/>
+                                            <TextBlock x:Name="BandwidthText" Text="0%" Foreground="#FFAA00" FontFamily="Consolas" FontSize="12" FontWeight="Bold"/>
+                                        </StackPanel>
                                     </StackPanel>
                                 </Grid>
-                                <Grid Height="50" Margin="0,3,0,0">
+                                <Grid Height="80">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="50"/>
+                                        <ColumnDefinition Width="100"/>
                                     </Grid.ColumnDefinitions>
-                                    <Border Background="#001100" BorderBrush="#003300" BorderThickness="1">
+                                    <Border Background="#001100" BorderBrush="#004400" BorderThickness="2" CornerRadius="4">
                                         <Canvas x:Name="TrafficGraphCanvas"/>
                                     </Border>
-                                    <StackPanel Grid.Column="1" Margin="3,0,0,0" VerticalAlignment="Center">
-                                        <TextBlock x:Name="SentDataText" Text="↑0" Foreground="#00FF00" FontFamily="Consolas" FontSize="7"/>
-                                        <TextBlock x:Name="ReceivedDataText" Text="↓0" Foreground="#00FFFF" FontFamily="Consolas" FontSize="7"/>
-                                        <TextBlock x:Name="LatencyText" Text="~0ms" Foreground="#FFAA00" FontFamily="Consolas" FontSize="7"/>
+                                    <StackPanel Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center" Spacing="4">
+                                        <TextBlock x:Name="SentDataText" Text="↑ 0 B" Foreground="#00FF00" FontFamily="Consolas" FontSize="12"/>
+                                        <TextBlock x:Name="ReceivedDataText" Text="↓ 0 B" Foreground="#00FFFF" FontFamily="Consolas" FontSize="12"/>
+                                        <TextBlock x:Name="LatencyText" Text="~ 0 ms" Foreground="#FFAA00" FontFamily="Consolas" FontSize="12"/>
                                     </StackPanel>
                                 </Grid>
                             </StackPanel>
                         </Border>
 
-                        <!-- Protocol Distribution + QoS -->
-                        <Border Style="{StaticResource MatrixBorderStyle}" Padding="6" Margin="0,0,0,4">
+                        <!-- Protocol Distribution -->
+                        <Border Style="{StaticResource MatrixBorderStyle}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-                                <!-- Protocol Bars -->
                                 <StackPanel>
-                                    <TextBlock Text="► PROTOCOLS" FontSize="8" Style="{StaticResource MatrixLabelStyle}" Margin="0,0,0,2"/>
+                                    <TextBlock Text="► PROTOCOLS" FontSize="13" Style="{StaticResource MatrixLabelStyle}" Margin="0,0,0,8"/>
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
                                         <StackPanel HorizontalAlignment="Center">
-                                            <Border Background="#001100" Width="22" Height="22" BorderBrush="#00FF00" BorderThickness="1">
-                                                <Border x:Name="TcpBar" Background="#00FF00" VerticalAlignment="Bottom" Height="11"/>
+                                            <Border Background="#002200" Width="40" Height="40" BorderBrush="#00FF00" BorderThickness="2" CornerRadius="4">
+                                                <Border x:Name="TcpBar" Background="#00FF00" VerticalAlignment="Bottom" Height="20"/>
                                             </Border>
-                                            <TextBlock x:Name="TcpCountText" Text="0" Foreground="#00FF00" FontFamily="Consolas" FontSize="6" HorizontalAlignment="Center"/>
+                                            <TextBlock Text="TCP" Foreground="#00FF00" FontFamily="Consolas" FontSize="10" HorizontalAlignment="Center"/>
+                                            <TextBlock x:Name="TcpCountText" Text="0" Foreground="#00FF00" FontFamily="Consolas" FontSize="12" FontWeight="Bold" HorizontalAlignment="Center"/>
                                         </StackPanel>
                                         <StackPanel Grid.Column="1" HorizontalAlignment="Center">
-                                            <Border Background="#001111" Width="22" Height="22" BorderBrush="#00FFFF" BorderThickness="1">
-                                                <Border x:Name="UdpBar" Background="#00FFFF" VerticalAlignment="Bottom" Height="8"/>
+                                            <Border Background="#002222" Width="40" Height="40" BorderBrush="#00FFFF" BorderThickness="2" CornerRadius="4">
+                                                <Border x:Name="UdpBar" Background="#00FFFF" VerticalAlignment="Bottom" Height="15"/>
                                             </Border>
-                                            <TextBlock x:Name="UdpCountText" Text="0" Foreground="#00FFFF" FontFamily="Consolas" FontSize="6" HorizontalAlignment="Center"/>
+                                            <TextBlock Text="UDP" Foreground="#00FFFF" FontFamily="Consolas" FontSize="10" HorizontalAlignment="Center"/>
+                                            <TextBlock x:Name="UdpCountText" Text="0" Foreground="#00FFFF" FontFamily="Consolas" FontSize="12" FontWeight="Bold" HorizontalAlignment="Center"/>
                                         </StackPanel>
                                         <StackPanel Grid.Column="2" HorizontalAlignment="Center">
-                                            <Border Background="#111100" Width="22" Height="22" BorderBrush="#FFFF00" BorderThickness="1">
-                                                <Border x:Name="IcmpBar" Background="#FFFF00" VerticalAlignment="Bottom" Height="3"/>
+                                            <Border Background="#222200" Width="40" Height="40" BorderBrush="#FFFF00" BorderThickness="2" CornerRadius="4">
+                                                <Border x:Name="IcmpBar" Background="#FFFF00" VerticalAlignment="Bottom" Height="8"/>
                                             </Border>
-                                            <TextBlock x:Name="IcmpCountText" Text="0" Foreground="#FFFF00" FontFamily="Consolas" FontSize="6" HorizontalAlignment="Center"/>
+                                            <TextBlock Text="ICMP" Foreground="#FFFF00" FontFamily="Consolas" FontSize="10" HorizontalAlignment="Center"/>
+                                            <TextBlock x:Name="IcmpCountText" Text="0" Foreground="#FFFF00" FontFamily="Consolas" FontSize="12" FontWeight="Bold" HorizontalAlignment="Center"/>
                                         </StackPanel>
                                         <StackPanel Grid.Column="3" HorizontalAlignment="Center">
-                                            <Border Background="#110011" Width="22" Height="22" BorderBrush="#FF00FF" BorderThickness="1">
-                                                <Border x:Name="OtherBar" Background="#FF00FF" VerticalAlignment="Bottom" Height="2"/>
+                                            <Border Background="#220022" Width="40" Height="40" BorderBrush="#FF00FF" BorderThickness="2" CornerRadius="4">
+                                                <Border x:Name="OtherBar" Background="#FF00FF" VerticalAlignment="Bottom" Height="5"/>
                                             </Border>
-                                            <TextBlock x:Name="OtherCountText" Text="0" Foreground="#FF00FF" FontFamily="Consolas" FontSize="6" HorizontalAlignment="Center"/>
+                                            <TextBlock Text="OTHER" Foreground="#FF00FF" FontFamily="Consolas" FontSize="10" HorizontalAlignment="Center"/>
+                                            <TextBlock x:Name="OtherCountText" Text="0" Foreground="#FF00FF" FontFamily="Consolas" FontSize="12" FontWeight="Bold" HorizontalAlignment="Center"/>
                                         </StackPanel>
                                     </Grid>
                                 </StackPanel>
-                                <!-- QoS Metrics -->
-                                <StackPanel Grid.Column="1" Margin="4,0,0,0">
-                                    <TextBlock Text="► QoS METRICS" FontSize="8" Style="{StaticResource MatrixLabelStyle}" Margin="0,0,0,2"/>
+                                <!-- QoS -->
+                                <StackPanel Grid.Column="1" Margin="15,0,0,0">
+                                    <TextBlock Text="► QoS METRICS" FontSize="13" Style="{StaticResource MatrixLabelStyle}" Margin="0,0,0,8"/>
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*"/><ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition/><RowDefinition/>
+                                        </Grid.RowDefinitions>
                                         <StackPanel>
-                                            <TextBlock Text="Latency" Foreground="#666666" FontFamily="Consolas" FontSize="6"/>
-                                            <TextBlock x:Name="QosLatencyText" Text="0ms" Foreground="#00FF00" FontFamily="Consolas" FontSize="8"/>
-                                            <TextBlock Text="Jitter" Foreground="#666666" FontFamily="Consolas" FontSize="6"/>
-                                            <TextBlock x:Name="QosJitterText" Text="0ms" Foreground="#FFAA00" FontFamily="Consolas" FontSize="8"/>
+                                            <TextBlock Text="Latency" Foreground="#888888" FontFamily="Consolas" FontSize="10"/>
+                                            <TextBlock x:Name="QosLatencyText" Text="0 ms" Foreground="#00FF00" FontFamily="Consolas" FontSize="14" FontWeight="Bold"/>
                                         </StackPanel>
                                         <StackPanel Grid.Column="1">
-                                            <TextBlock Text="Loss" Foreground="#666666" FontFamily="Consolas" FontSize="6"/>
-                                            <TextBlock x:Name="QosLossText" Text="0%" Foreground="#FF4444" FontFamily="Consolas" FontSize="8"/>
-                                            <TextBlock Text="Throughput" Foreground="#666666" FontFamily="Consolas" FontSize="6"/>
-                                            <TextBlock x:Name="QosThroughputText" Text="0 Mbps" Foreground="#00FFFF" FontFamily="Consolas" FontSize="8"/>
+                                            <TextBlock Text="Jitter" Foreground="#888888" FontFamily="Consolas" FontSize="10"/>
+                                            <TextBlock x:Name="QosJitterText" Text="0 ms" Foreground="#FFAA00" FontFamily="Consolas" FontSize="14" FontWeight="Bold"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Row="1">
+                                            <TextBlock Text="Packet Loss" Foreground="#888888" FontFamily="Consolas" FontSize="10"/>
+                                            <TextBlock x:Name="QosLossText" Text="0%" Foreground="#FF4444" FontFamily="Consolas" FontSize="14" FontWeight="Bold"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Row="1" Grid.Column="1">
+                                            <TextBlock Text="Throughput" Foreground="#888888" FontFamily="Consolas" FontSize="10"/>
+                                            <TextBlock x:Name="QosThroughputText" Text="0 Mbps" Foreground="#00FFFF" FontFamily="Consolas" FontSize="14" FontWeight="Bold"/>
                                         </StackPanel>
                                     </Grid>
                                 </StackPanel>
                             </Grid>
                         </Border>
 
-                        <!-- Packet List with Wireshark Filter -->
-                        <Border Style="{StaticResource MatrixBorderStyle}" Padding="6" Margin="0,0,0,4">
+                        <!-- Packet Capture -->
+                        <Border Style="{StaticResource MatrixBorderStyle}">
                             <StackPanel>
-                                <Grid>
-                                    <TextBlock Text="► PACKET CAPTURE" FontSize="9" Style="{StaticResource MatrixLabelStyle}"/>
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                        <TextBlock x:Name="ConnectionCountText" Text="[0]" Foreground="#00FFFF" FontFamily="Consolas" FontSize="8"/>
-                                        <Button Content="REC" x:Name="RecordButton" Style="{StaticResource AlertButtonStyle}" Margin="4,0,0,0" Click="RecordButton_Click"/>
+                                <Grid Margin="0,0,0,8">
+                                    <TextBlock Text="► PACKET CAPTURE" FontSize="14" Style="{StaticResource MatrixLabelStyle}"/>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
+                                        <TextBlock x:Name="ConnectionCountText" Text="[0 connections]" Foreground="#00FFFF" FontFamily="Consolas" FontSize="12"/>
+                                        <Button Content="● REC" x:Name="RecordButton" Style="{StaticResource AlertButtonStyle}" Click="RecordButton_Click"/>
                                     </StackPanel>
                                 </Grid>
-                                <!-- Wireshark-style Filter -->
-                                <Grid Margin="0,3,0,3">
+                                <Grid Margin="0,0,0,8">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
                                     <TextBox x:Name="PacketFilterTextBox" Style="{StaticResource MatrixTextBoxStyle}" 
-                                             PlaceholderText="Filter: tcp.port==80 || udp || icmp" FontSize="8"
+                                             PlaceholderText="Filter: tcp.port==80 || udp || icmp"
                                              KeyDown="PacketFilterTextBox_KeyDown"/>
-                                    <Button Grid.Column="1" Content="Apply" Style="{StaticResource MatrixButtonStyle}" Margin="2,0,0,0" Click="ApplyFilterButton_Click"/>
+                                    <Button Grid.Column="1" Content="APPLY" Style="{StaticResource MatrixButtonStyle}" Margin="8,0,0,0" Click="ApplyFilterButton_Click"/>
                                 </Grid>
-                                <ListView x:Name="ConnectionsListView" MaxHeight="80" Background="Transparent" SelectionMode="Single" SelectionChanged="PacketListView_SelectionChanged">
+                                <ListView x:Name="ConnectionsListView" MaxHeight="150" Background="#050505" SelectionMode="Single" SelectionChanged="PacketListView_SelectionChanged">
                                     <ListView.ItemTemplate>
                                         <DataTemplate>
-                                            <Grid>
+                                            <Grid Padding="4">
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="35"/>
-                                                    <ColumnDefinition Width="55"/>
-                                                    <ColumnDefinition Width="28"/>
-                                                    <ColumnDefinition Width="55"/>
-                                                    <ColumnDefinition Width="30"/>
+                                                    <ColumnDefinition Width="50"/>
+                                                    <ColumnDefinition Width="100"/>
+                                                    <ColumnDefinition Width="50"/>
+                                                    <ColumnDefinition Width="100"/>
+                                                    <ColumnDefinition Width="60"/>
                                                     <ColumnDefinition Width="*"/>
                                                 </Grid.ColumnDefinitions>
-                                                <TextBlock Text="{Binding Id}" Foreground="#666666" FontFamily="Consolas" FontSize="6"/>
-                                                <TextBlock Text="{Binding LocalEndpoint}" Grid.Column="1" Foreground="#00FF00" FontFamily="Consolas" FontSize="6"/>
-                                                <TextBlock Text="{Binding Protocol}" Grid.Column="2" Foreground="#FFFF00" FontFamily="Consolas" FontSize="6"/>
-                                                <TextBlock Text="{Binding RemoteEndpoint}" Grid.Column="3" Foreground="#00FFFF" FontFamily="Consolas" FontSize="6"/>
-                                                <TextBlock Text="{Binding Bytes}" Grid.Column="4" Foreground="#FF00FF" FontFamily="Consolas" FontSize="6"/>
-                                                <TextBlock Text="{Binding Info}" Grid.Column="5" Foreground="#888888" FontFamily="Consolas" FontSize="6" TextTrimming="CharacterEllipsis"/>
+                                                <TextBlock Text="{Binding Id}" Foreground="#888888" FontFamily="Consolas" FontSize="11"/>
+                                                <TextBlock Text="{Binding LocalEndpoint}" Grid.Column="1" Foreground="#00FF00" FontFamily="Consolas" FontSize="11"/>
+                                                <TextBlock Text="{Binding Protocol}" Grid.Column="2" Foreground="#FFFF00" FontFamily="Consolas" FontSize="11" FontWeight="Bold"/>
+                                                <TextBlock Text="{Binding RemoteEndpoint}" Grid.Column="3" Foreground="#00FFFF" FontFamily="Consolas" FontSize="11"/>
+                                                <TextBlock Text="{Binding Bytes}" Grid.Column="4" Foreground="#FF00FF" FontFamily="Consolas" FontSize="11"/>
+                                                <TextBlock Text="{Binding Info}" Grid.Column="5" Foreground="#AAAAAA" FontFamily="Consolas" FontSize="11" TextTrimming="CharacterEllipsis"/>
                                             </Grid>
                                         </DataTemplate>
                                     </ListView.ItemTemplate>
@@ -262,35 +308,37 @@
                         </Border>
 
                         <!-- Packet Details -->
-                        <Border x:Name="PacketDetailsPanel" Style="{StaticResource MatrixBorderStyle}" Padding="6" Margin="0,0,0,4" Visibility="Collapsed">
+                        <Border x:Name="PacketDetailsPanel" Style="{StaticResource MatrixBorderStyle}" Visibility="Collapsed">
                             <StackPanel>
-                                <TextBlock Text="► PACKET DETAILS" FontSize="8" Style="{StaticResource MatrixLabelStyle}" Margin="0,0,0,2"/>
-                                <ScrollViewer MaxHeight="60" Background="#050505" Padding="3">
-                                    <TextBlock x:Name="PacketDetailsText" Foreground="#00FF00" FontFamily="Consolas" FontSize="7" TextWrapping="Wrap"/>
+                                <TextBlock Text="► PACKET DETAILS" FontSize="13" Style="{StaticResource MatrixLabelStyle}" Margin="0,0,0,8"/>
+                                <ScrollViewer MaxHeight="100" Background="#050505" Padding="8" CornerRadius="4">
+                                    <TextBlock x:Name="PacketDetailsText" Foreground="#00FF00" FontFamily="Consolas" FontSize="11" TextWrapping="Wrap"/>
                                 </ScrollViewer>
                             </StackPanel>
                         </Border>
 
-                        <!-- Network Interface Info -->
-                        <Border Style="{StaticResource MatrixBorderStyle}" Padding="6" Margin="0,0,0,4">
+                        <!-- Network Interface -->
+                        <Border Style="{StaticResource MatrixBorderStyle}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <StackPanel>
-                                    <TextBlock Text="► INTERFACE" FontSize="8" Style="{StaticResource MatrixLabelStyle}"/>
-                                    <TextBlock x:Name="InterfaceNameText" Text="-" Style="{StaticResource MatrixTextStyle}" FontSize="6"/>
-                                    <TextBlock x:Name="InterfaceTypeText" Text="-" Style="{StaticResource MatrixTextStyle}" FontSize="6"/>
-                                    <TextBlock x:Name="InterfaceSpeedText" Text="-" Style="{StaticResource MatrixTextStyle}" FontSize="6"/>
-                                    <TextBlock x:Name="MacAddressText" Text="-" Style="{StaticResource MatrixTextStyle}" FontSize="6"/>
+                                    <TextBlock Text="► INTERFACE" FontSize="13" Style="{StaticResource MatrixLabelStyle}" Margin="0,0,0,8"/>
+                                    <TextBlock x:Name="InterfaceNameText" Text="Name: -" Style="{StaticResource MatrixTextStyle}"/>
+                                    <TextBlock x:Name="InterfaceTypeText" Text="Type: -" Style="{StaticResource MatrixTextStyle}"/>
+                                    <TextBlock x:Name="InterfaceStatusText" Text="Status: -" Style="{StaticResource MatrixTextStyle}"/>
+                                    <TextBlock x:Name="InterfaceSpeedText" Text="Speed: -" Style="{StaticResource MatrixTextStyle}"/>
+                                    <TextBlock x:Name="MacAddressText" Text="MAC: -" Style="{StaticResource MatrixTextStyle}"/>
                                 </StackPanel>
                                 <StackPanel Grid.Column="1">
-                                    <TextBlock Text="► IP CONFIG" FontSize="8" Style="{StaticResource MatrixLabelStyle}"/>
-                                    <TextBlock x:Name="IPv4Text" Text="-" Style="{StaticResource MatrixTextStyle}" FontSize="6"/>
-                                    <TextBlock x:Name="SubnetText" Text="-" Style="{StaticResource MatrixTextStyle}" FontSize="6"/>
-                                    <TextBlock x:Name="GatewayText" Text="-" Style="{StaticResource MatrixTextStyle}" FontSize="6"/>
-                                    <TextBlock x:Name="DnsServersText" Text="-" Style="{StaticResource MatrixTextStyle}" FontSize="6"/>
+                                    <TextBlock Text="► IP CONFIGURATION" FontSize="13" Style="{StaticResource MatrixLabelStyle}" Margin="0,0,0,8"/>
+                                    <TextBlock x:Name="IPv4Text" Text="IPv4: -" Style="{StaticResource MatrixTextStyle}"/>
+                                    <TextBlock x:Name="IPv6Text" Text="IPv6: -" Style="{StaticResource MatrixTextStyle}"/>
+                                    <TextBlock x:Name="SubnetText" Text="Subnet: -" Style="{StaticResource MatrixTextStyle}"/>
+                                    <TextBlock x:Name="GatewayText" Text="Gateway: -" Style="{StaticResource MatrixTextStyle}"/>
+                                    <TextBlock x:Name="DnsServersText" Text="DNS: -" Style="{StaticResource MatrixTextStyle}"/>
                                 </StackPanel>
                             </Grid>
                         </Border>
@@ -299,94 +347,66 @@
             </PivotItem>
 
             <!-- TAB 2: SCANNER -->
-            <PivotItem Header="SCANNER">
+            <PivotItem Header="🔍 SCANNER">
                 <ScrollViewer>
-                    <StackPanel Margin="2">
+                    <StackPanel Margin="4" Spacing="8">
                         <!-- NMAP Scanner -->
-                        <Border Style="{StaticResource MatrixBorderStyle}" Padding="6" Margin="0,0,0,4" BorderBrush="#FF6600">
+                        <Border Style="{StaticResource MatrixBorderStyle}" BorderBrush="#FF6600">
                             <StackPanel>
-                                <TextBlock Text="► NMAP SCANNER" FontSize="9" Foreground="#FF6600" FontFamily="Consolas" FontWeight="Bold" Margin="0,0,0,4"/>
-                                <Grid>
+                                <TextBlock Text="► NMAP NETWORK SCANNER" FontSize="14" Foreground="#FF6600" FontFamily="Consolas" FontWeight="Bold" Margin="0,0,0,10"/>
+                                <Grid Margin="0,0,0,8">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="60"/>
+                                        <ColumnDefinition Width="120"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBox x:Name="NmapTargetTextBox" Style="{StaticResource MatrixTextBoxStyle}" PlaceholderText="192.168.1.0/24 or 192.168.1.1-254"/>
-                                    <ComboBox x:Name="NmapScanTypeCombo" Grid.Column="1" Style="{StaticResource MatrixComboBoxStyle}" Margin="3,0,0,0">
-                                        <ComboBoxItem Content="Quick" IsSelected="True"/>
-                                        <ComboBoxItem Content="Full"/>
-                                        <ComboBoxItem Content="Stealth"/>
-                                        <ComboBoxItem Content="UDP"/>
-                                        <ComboBoxItem Content="Service"/>
-                                        <ComboBoxItem Content="OS"/>
-                                        <ComboBoxItem Content="Vuln"/>
+                                    <TextBox x:Name="NmapTargetTextBox" Style="{StaticResource MatrixTextBoxStyle}" PlaceholderText="Target: 192.168.1.0/24 or 192.168.1.1-254"/>
+                                    <ComboBox x:Name="NmapScanTypeCombo" Grid.Column="1" Style="{StaticResource MatrixComboBoxStyle}" Margin="8,0,0,0">
+                                        <ComboBoxItem Content="Quick Scan" IsSelected="True"/>
+                                        <ComboBoxItem Content="Full Scan"/>
+                                        <ComboBoxItem Content="Stealth Scan"/>
+                                        <ComboBoxItem Content="UDP Scan"/>
+                                        <ComboBoxItem Content="Service Scan"/>
+                                        <ComboBoxItem Content="OS Detection"/>
+                                        <ComboBoxItem Content="Vuln Scan"/>
                                     </ComboBox>
                                 </Grid>
-                                <Grid Margin="0,3,0,0">
+                                <Grid Margin="0,0,0,8">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBox x:Name="NmapPortsTextBox" Style="{StaticResource MatrixTextBoxStyle}" PlaceholderText="Ports: 22,80,443 or 1-1000"/>
-                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="3,0,0,0">
-                                        <Button Content="SCAN" Style="{StaticResource AlertButtonStyle}" Click="NmapScanButton_Click"/>
-                                        <Button Content="NET" Style="{StaticResource AlertButtonStyle}" Margin="2,0" Click="NmapNetworkDiscoveryButton_Click"/>
-                                        <Button Content="■" x:Name="NmapStopButton" Style="{StaticResource AlertButtonStyle}" Click="NmapStopButton_Click" IsEnabled="False"/>
+                                    <TextBox x:Name="NmapPortsTextBox" Style="{StaticResource MatrixTextBoxStyle}" PlaceholderText="Ports: 22,80,443 or 1-1000 (empty for default)"/>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="8,0,0,0" Spacing="8">
+                                        <Button Content="🔍 SCAN" Style="{StaticResource AlertButtonStyle}" Click="NmapScanButton_Click"/>
+                                        <Button Content="🌐 DISCOVER" Style="{StaticResource AlertButtonStyle}" Click="NmapNetworkDiscoveryButton_Click"/>
+                                        <Button Content="■ STOP" x:Name="NmapStopButton" Style="{StaticResource AlertButtonStyle}" Click="NmapStopButton_Click" IsEnabled="False"/>
                                     </StackPanel>
                                 </Grid>
-                                <ProgressBar x:Name="NmapProgressBar" Height="2" Margin="0,3,0,0" Foreground="#FF6600" Background="#220000" Visibility="Collapsed"/>
+                                <ProgressBar x:Name="NmapProgressBar" Height="4" Foreground="#FF6600" Background="#220000" Visibility="Collapsed" CornerRadius="2"/>
                             </StackPanel>
                         </Border>
 
                         <!-- Scan Results -->
-                        <Border x:Name="NmapResultsPanel" Style="{StaticResource MatrixBorderStyle}" Padding="6" Margin="0,0,0,4" BorderBrush="#FF6600" Visibility="Collapsed">
+                        <Border x:Name="NmapResultsPanel" Style="{StaticResource MatrixBorderStyle}" BorderBrush="#FF6600" Visibility="Collapsed">
                             <StackPanel>
-                                <Grid>
-                                    <TextBlock Text="► SCAN RESULTS" FontSize="9" Foreground="#FF6600" FontFamily="Consolas" FontWeight="Bold"/>
-                                    <TextBlock x:Name="NmapHostCountText" Text="[0]" Foreground="#FF6600" FontFamily="Consolas" FontSize="8" HorizontalAlignment="Right"/>
+                                <Grid Margin="0,0,0,8">
+                                    <TextBlock Text="► SCAN RESULTS" FontSize="14" Foreground="#FF6600" FontFamily="Consolas" FontWeight="Bold"/>
+                                    <TextBlock x:Name="NmapHostCountText" Text="[0 hosts]" Foreground="#FF6600" FontFamily="Consolas" FontSize="12" HorizontalAlignment="Right"/>
                                 </Grid>
-                                <ListView x:Name="NmapResultsListView" MaxHeight="100" Background="Transparent" SelectionMode="Single" SelectionChanged="NmapResultsListView_SelectionChanged">
+                                <ListView x:Name="NmapResultsListView" MaxHeight="200" Background="#0A0500" SelectionMode="Single" SelectionChanged="NmapResultsListView_SelectionChanged">
                                     <ListView.ItemTemplate>
                                         <DataTemplate>
-                                            <Grid>
+                                            <Grid Padding="6">
                                                 <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="120"/>
+                                                    <ColumnDefinition Width="60"/>
                                                     <ColumnDefinition Width="80"/>
-                                                    <ColumnDefinition Width="35"/>
-                                                    <ColumnDefinition Width="50"/>
                                                     <ColumnDefinition Width="*"/>
                                                 </Grid.ColumnDefinitions>
-                                                <TextBlock Text="{Binding Host}" Foreground="#FF6600" FontFamily="Consolas" FontSize="7"/>
-                                                <TextBlock Text="{Binding Status}" Grid.Column="1" Foreground="#00FF00" FontFamily="Consolas" FontSize="7"/>
-                                                <TextBlock Text="{Binding OS}" Grid.Column="2" Foreground="#FFAA00" FontFamily="Consolas" FontSize="7"/>
-                                                <TextBlock Text="{Binding Ports}" Grid.Column="3" Foreground="#00FFFF" FontFamily="Consolas" FontSize="7" TextTrimming="CharacterEllipsis"/>
-                                            </Grid>
-                                        </DataTemplate>
-                                    </ListView.ItemTemplate>
-                                </ListView>
-                            </StackPanel>
-                        </Border>
-
-                        <!-- Asset Inventory -->
-                        <Border Style="{StaticResource MatrixBorderStyle}" Padding="6" Margin="0,0,0,4">
-                            <StackPanel>
-                                <Grid>
-                                    <TextBlock Text="► ASSET INVENTORY" FontSize="9" Style="{StaticResource MatrixLabelStyle}"/>
-                                    <TextBlock x:Name="AssetCountText" Text="[0 devices]" Foreground="#00FFFF" FontFamily="Consolas" FontSize="8" HorizontalAlignment="Right"/>
-                                </Grid>
-                                <ListView x:Name="AssetListView" MaxHeight="80" Background="Transparent" Margin="0,3,0,0" SelectionMode="None">
-                                    <ListView.ItemTemplate>
-                                        <DataTemplate>
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="80"/>
-                                                    <ColumnDefinition Width="80"/>
-                                                    <ColumnDefinition Width="50"/>
-                                                    <ColumnDefinition Width="*"/>
-                                                </Grid.ColumnDefinitions>
-                                                <TextBlock Text="{Binding IP}" Foreground="#00FF00" FontFamily="Consolas" FontSize="7"/>
-                                                <TextBlock Text="{Binding MAC}" Grid.Column="1" Foreground="#00FFFF" FontFamily="Consolas" FontSize="7"/>
-                                                <TextBlock Text="{Binding Vendor}" Grid.Column="2" Foreground="#FFAA00" FontFamily="Consolas" FontSize="7"/>
-                                                <TextBlock Text="{Binding OS}" Grid.Column="3" Foreground="#888888" FontFamily="Consolas" FontSize="7"/>
+                                                <TextBlock Text="{Binding Host}" Foreground="#FF6600" FontFamily="Consolas" FontSize="12" FontWeight="Bold"/>
+                                                <TextBlock Text="{Binding Status}" Grid.Column="1" Foreground="#00FF00" FontFamily="Consolas" FontSize="12"/>
+                                                <TextBlock Text="{Binding OS}" Grid.Column="2" Foreground="#FFAA00" FontFamily="Consolas" FontSize="12"/>
+                                                <TextBlock Text="{Binding Ports}" Grid.Column="3" Foreground="#00FFFF" FontFamily="Consolas" FontSize="12" TextTrimming="CharacterEllipsis"/>
                                             </Grid>
                                         </DataTemplate>
                                     </ListView.ItemTemplate>
@@ -395,24 +415,52 @@
                         </Border>
 
                         <!-- Packet Sender -->
-                        <Border Style="{StaticResource MatrixBorderStyle}" Padding="6" Margin="0,0,0,4">
+                        <Border Style="{StaticResource MatrixBorderStyle}">
                             <StackPanel>
-                                <TextBlock Text="► PACKET SENDER" FontSize="9" Style="{StaticResource MatrixLabelStyle}" Margin="0,0,0,3"/>
-                                <Grid>
+                                <TextBlock Text="► PACKET SENDER" FontSize="14" Style="{StaticResource MatrixLabelStyle}" Margin="0,0,0,10"/>
+                                <Grid Margin="0,0,0,8">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="45"/>
+                                        <ColumnDefinition Width="100"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBox x:Name="TargetHostTextBox" Style="{StaticResource MatrixTextBoxStyle}" PlaceholderText="Host"/>
-                                    <TextBox x:Name="TargetPortTextBox" Grid.Column="1" Style="{StaticResource MatrixTextBoxStyle}" PlaceholderText="Port" Margin="2,0,0,0"/>
+                                    <TextBox x:Name="TargetHostTextBox" Style="{StaticResource MatrixTextBoxStyle}" PlaceholderText="Target Host (IP or hostname)"/>
+                                    <TextBox x:Name="TargetPortTextBox" Grid.Column="1" Style="{StaticResource MatrixTextBoxStyle}" PlaceholderText="Port" Margin="8,0,0,0"/>
                                 </Grid>
-                                <TextBox x:Name="PacketDataTextBox" Style="{StaticResource MatrixTextBoxStyle}" PlaceholderText="Payload data..." Margin="0,2,0,0"/>
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,2,0,0">
+                                <TextBox x:Name="PacketDataTextBox" Style="{StaticResource MatrixTextBoxStyle}" PlaceholderText="Payload data (optional)..." Margin="0,0,0,8"/>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
                                     <Button Content="TCP" Style="{StaticResource MatrixButtonStyle}" Click="SendTcpButton_Click"/>
-                                    <Button Content="UDP" Style="{StaticResource MatrixButtonStyle}" Margin="2,0" Click="SendUdpButton_Click"/>
-                                    <Button Content="PING" Style="{StaticResource MatrixButtonStyle}" Click="PingButton_Click"/>
-                                    <Button Content="TRACE" Style="{StaticResource MatrixButtonStyle}" Margin="2,0,0,0" Click="TraceRouteButton_Click"/>
+                                    <Button Content="UDP" Style="{StaticResource MatrixButtonStyle}" Click="SendUdpButton_Click"/>
+                                    <Button Content="PING" Style="{StaticResource BlueButtonStyle}" Click="PingButton_Click"/>
+                                    <Button Content="TRACEROUTE" Style="{StaticResource BlueButtonStyle}" Click="TraceRouteButton_Click"/>
                                 </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Asset Inventory -->
+                        <Border Style="{StaticResource MatrixBorderStyle}">
+                            <StackPanel>
+                                <Grid Margin="0,0,0,8">
+                                    <TextBlock Text="► ASSET INVENTORY" FontSize="14" Style="{StaticResource MatrixLabelStyle}"/>
+                                    <TextBlock x:Name="AssetCountText" Text="[0 devices]" Foreground="#00FFFF" FontFamily="Consolas" FontSize="12" HorizontalAlignment="Right"/>
+                                </Grid>
+                                <ListView x:Name="AssetListView" MaxHeight="150" Background="#050505" SelectionMode="None">
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Padding="4">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="120"/>
+                                                    <ColumnDefinition Width="140"/>
+                                                    <ColumnDefinition Width="80"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="{Binding IP}" Foreground="#00FF00" FontFamily="Consolas" FontSize="11"/>
+                                                <TextBlock Text="{Binding MAC}" Grid.Column="1" Foreground="#00FFFF" FontFamily="Consolas" FontSize="11"/>
+                                                <TextBlock Text="{Binding Vendor}" Grid.Column="2" Foreground="#FFAA00" FontFamily="Consolas" FontSize="11"/>
+                                                <TextBlock Text="{Binding OS}" Grid.Column="3" Foreground="#AAAAAA" FontFamily="Consolas" FontSize="11"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
                             </StackPanel>
                         </Border>
                     </StackPanel>
@@ -420,78 +468,76 @@
             </PivotItem>
 
             <!-- TAB 3: SECURITY -->
-            <PivotItem Header="SECURITY">
+            <PivotItem Header="🛡️ SECURITY">
                 <ScrollViewer>
-                    <StackPanel Margin="2">
+                    <StackPanel Margin="4" Spacing="8">
                         <!-- Threat Detection -->
-                        <Border Style="{StaticResource MatrixBorderStyle}" Padding="6" Margin="0,0,0,4" BorderBrush="#FF4444">
+                        <Border Style="{StaticResource MatrixBorderStyle}" BorderBrush="#FF4444">
                             <StackPanel>
-                                <Grid>
-                                    <TextBlock Text="► THREAT DETECTION" FontSize="9" Foreground="#FF4444" FontFamily="Consolas" FontWeight="Bold"/>
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                        <TextBlock x:Name="ThreatCountText" Text="0 threats" Foreground="#FF4444" FontFamily="Consolas" FontSize="8"/>
-                                    </StackPanel>
+                                <Grid Margin="0,0,0,10">
+                                    <TextBlock Text="► THREAT DETECTION" FontSize="14" Foreground="#FF4444" FontFamily="Consolas" FontWeight="Bold"/>
+                                    <TextBlock x:Name="ThreatCountText" Text="0 threats detected" Foreground="#FF4444" FontFamily="Consolas" FontSize="12" HorizontalAlignment="Right"/>
                                 </Grid>
-                                <Grid Margin="0,3,0,0">
+                                <Grid Margin="0,0,0,10">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <StackPanel>
-                                        <TextBlock Text="Port Scan" Foreground="#666666" FontFamily="Consolas" FontSize="7"/>
-                                        <TextBlock x:Name="PortScanCountText" Text="0" Foreground="#FF6600" FontFamily="Consolas" FontSize="9"/>
+                                    <StackPanel HorizontalAlignment="Center">
+                                        <TextBlock Text="Port Scans" Foreground="#888888" FontFamily="Consolas" FontSize="11"/>
+                                        <TextBlock x:Name="PortScanCountText" Text="0" Foreground="#FF6600" FontFamily="Consolas" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center"/>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="1">
-                                        <TextBlock Text="DoS/DDoS" Foreground="#666666" FontFamily="Consolas" FontSize="7"/>
-                                        <TextBlock x:Name="DosCountText" Text="0" Foreground="#FF4444" FontFamily="Consolas" FontSize="9"/>
+                                    <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+                                        <TextBlock Text="DoS/DDoS" Foreground="#888888" FontFamily="Consolas" FontSize="11"/>
+                                        <TextBlock x:Name="DosCountText" Text="0" Foreground="#FF4444" FontFamily="Consolas" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center"/>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="2">
-                                        <TextBlock Text="ARP Spoof" Foreground="#666666" FontFamily="Consolas" FontSize="7"/>
-                                        <TextBlock x:Name="ArpSpoofCountText" Text="0" Foreground="#FF00FF" FontFamily="Consolas" FontSize="9"/>
+                                    <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                                        <TextBlock Text="ARP Spoof" Foreground="#888888" FontFamily="Consolas" FontSize="11"/>
+                                        <TextBlock x:Name="ArpSpoofCountText" Text="0" Foreground="#FF00FF" FontFamily="Consolas" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center"/>
                                     </StackPanel>
                                 </Grid>
-                                <ListView x:Name="ThreatListView" MaxHeight="60" Background="Transparent" Margin="0,3,0,0" SelectionMode="None">
+                                <ListView x:Name="ThreatListView" MaxHeight="100" Background="#100000" SelectionMode="None">
                                     <ListView.ItemTemplate>
                                         <DataTemplate>
-                                            <TextBlock Text="{Binding}" Foreground="#FF4444" FontFamily="Consolas" FontSize="7" TextWrapping="Wrap"/>
+                                            <TextBlock Text="{Binding}" Foreground="#FF4444" FontFamily="Consolas" FontSize="11" TextWrapping="Wrap" Padding="4"/>
                                         </DataTemplate>
                                     </ListView.ItemTemplate>
                                 </ListView>
                             </StackPanel>
                         </Border>
 
-                        <!-- TLS/Certificate Analysis -->
-                        <Border Style="{StaticResource MatrixBorderStyle}" Padding="6" Margin="0,0,0,4" BorderBrush="#4488FF">
+                        <!-- TLS Analysis -->
+                        <Border Style="{StaticResource MatrixBorderStyle}" BorderBrush="#4488FF">
                             <StackPanel>
-                                <TextBlock Text="► TLS/PKI ANALYSIS" FontSize="9" Foreground="#4488FF" FontFamily="Consolas" FontWeight="Bold" Margin="0,0,0,3"/>
-                                <Grid>
+                                <TextBlock Text="► TLS/PKI ANALYSIS" FontSize="14" Foreground="#4488FF" FontFamily="Consolas" FontWeight="Bold" Margin="0,0,0,10"/>
+                                <Grid Margin="0,0,0,10">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <StackPanel>
-                                        <TextBlock Text="TLS 1.3" Foreground="#666666" FontFamily="Consolas" FontSize="7"/>
-                                        <TextBlock x:Name="Tls13CountText" Text="0" Foreground="#00FF00" FontFamily="Consolas" FontSize="9"/>
+                                    <StackPanel HorizontalAlignment="Center">
+                                        <TextBlock Text="TLS 1.3" Foreground="#888888" FontFamily="Consolas" FontSize="11"/>
+                                        <TextBlock x:Name="Tls13CountText" Text="0" Foreground="#00FF00" FontFamily="Consolas" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center"/>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="1">
-                                        <TextBlock Text="TLS 1.2" Foreground="#666666" FontFamily="Consolas" FontSize="7"/>
-                                        <TextBlock x:Name="Tls12CountText" Text="0" Foreground="#FFAA00" FontFamily="Consolas" FontSize="9"/>
+                                    <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+                                        <TextBlock Text="TLS 1.2" Foreground="#888888" FontFamily="Consolas" FontSize="11"/>
+                                        <TextBlock x:Name="Tls12CountText" Text="0" Foreground="#FFAA00" FontFamily="Consolas" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center"/>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="2">
-                                        <TextBlock Text="Weak/Old" Foreground="#666666" FontFamily="Consolas" FontSize="7"/>
-                                        <TextBlock x:Name="TlsWeakCountText" Text="0" Foreground="#FF4444" FontFamily="Consolas" FontSize="9"/>
+                                    <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                                        <TextBlock Text="Weak/Old" Foreground="#888888" FontFamily="Consolas" FontSize="11"/>
+                                        <TextBlock x:Name="TlsWeakCountText" Text="0" Foreground="#FF4444" FontFamily="Consolas" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center"/>
                                     </StackPanel>
                                 </Grid>
-                                <ListView x:Name="CertListView" MaxHeight="50" Background="Transparent" Margin="0,3,0,0" SelectionMode="None">
+                                <ListView x:Name="CertListView" MaxHeight="100" Background="#000510" SelectionMode="None">
                                     <ListView.ItemTemplate>
                                         <DataTemplate>
-                                            <Grid>
+                                            <Grid Padding="4">
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="80"/>
-                                                    <ColumnDefinition Width="60"/>
+                                                    <ColumnDefinition Width="120"/>
+                                                    <ColumnDefinition Width="100"/>
                                                     <ColumnDefinition Width="*"/>
                                                 </Grid.ColumnDefinitions>
-                                                <TextBlock Text="{Binding Host}" Foreground="#4488FF" FontFamily="Consolas" FontSize="7"/>
-                                                <TextBlock Text="{Binding Expiry}" Grid.Column="1" Foreground="#FFAA00" FontFamily="Consolas" FontSize="7"/>
-                                                <TextBlock Text="{Binding Cipher}" Grid.Column="2" Foreground="#00FF00" FontFamily="Consolas" FontSize="7"/>
+                                                <TextBlock Text="{Binding Host}" Foreground="#4488FF" FontFamily="Consolas" FontSize="11"/>
+                                                <TextBlock Text="{Binding Expiry}" Grid.Column="1" Foreground="#FFAA00" FontFamily="Consolas" FontSize="11"/>
+                                                <TextBlock Text="{Binding Cipher}" Grid.Column="2" Foreground="#00FF00" FontFamily="Consolas" FontSize="11"/>
                                             </Grid>
                                         </DataTemplate>
                                     </ListView.ItemTemplate>
@@ -499,46 +545,46 @@
                             </StackPanel>
                         </Border>
 
-                        <!-- DNS Analysis -->
-                        <Border Style="{StaticResource MatrixBorderStyle}" Padding="6" Margin="0,0,0,4">
+                        <!-- DNS Insight -->
+                        <Border Style="{StaticResource MatrixBorderStyle}">
                             <StackPanel>
-                                <TextBlock Text="► DNS INSIGHT" FontSize="9" Style="{StaticResource MatrixLabelStyle}" Margin="0,0,0,3"/>
+                                <TextBlock Text="► DNS INSIGHT" FontSize="14" Style="{StaticResource MatrixLabelStyle}" Margin="0,0,0,10"/>
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <StackPanel>
-                                        <TextBlock Text="Queries" Foreground="#666666" FontFamily="Consolas" FontSize="7"/>
-                                        <TextBlock x:Name="DnsQueryCountText" Text="0" Foreground="#00FF00" FontFamily="Consolas" FontSize="9"/>
+                                    <StackPanel HorizontalAlignment="Center">
+                                        <TextBlock Text="Queries" Foreground="#888888" FontFamily="Consolas" FontSize="11"/>
+                                        <TextBlock x:Name="DnsQueryCountText" Text="0" Foreground="#00FF00" FontFamily="Consolas" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center"/>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="1">
-                                        <TextBlock Text="NXDOMAIN" Foreground="#666666" FontFamily="Consolas" FontSize="7"/>
-                                        <TextBlock x:Name="DnsNxdomainText" Text="0" Foreground="#FF6600" FontFamily="Consolas" FontSize="9"/>
+                                    <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+                                        <TextBlock Text="NXDOMAIN" Foreground="#888888" FontFamily="Consolas" FontSize="11"/>
+                                        <TextBlock x:Name="DnsNxdomainText" Text="0" Foreground="#FF6600" FontFamily="Consolas" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center"/>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="2">
-                                        <TextBlock Text="Tunneling" Foreground="#666666" FontFamily="Consolas" FontSize="7"/>
-                                        <TextBlock x:Name="DnsTunnelText" Text="0" Foreground="#FF4444" FontFamily="Consolas" FontSize="9"/>
+                                    <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                                        <TextBlock Text="Tunneling" Foreground="#888888" FontFamily="Consolas" FontSize="11"/>
+                                        <TextBlock x:Name="DnsTunnelText" Text="0" Foreground="#FF4444" FontFamily="Consolas" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center"/>
                                     </StackPanel>
                                 </Grid>
                             </StackPanel>
                         </Border>
 
                         <!-- Zero Trust -->
-                        <Border Style="{StaticResource MatrixBorderStyle}" Padding="6" Margin="0,0,0,4" BorderBrush="#AA44FF">
+                        <Border Style="{StaticResource MatrixBorderStyle}" BorderBrush="#AA44FF">
                             <StackPanel>
-                                <TextBlock Text="► ZERO-TRUST VISIBILITY" FontSize="9" Foreground="#AA44FF" FontFamily="Consolas" FontWeight="Bold" Margin="0,0,0,3"/>
-                                <ListView x:Name="ZeroTrustListView" MaxHeight="60" Background="Transparent" SelectionMode="None">
+                                <TextBlock Text="► ZERO-TRUST VISIBILITY" FontSize="14" Foreground="#AA44FF" FontFamily="Consolas" FontWeight="Bold" Margin="0,0,0,10"/>
+                                <ListView x:Name="ZeroTrustListView" MaxHeight="100" Background="#080010" SelectionMode="None">
                                     <ListView.ItemTemplate>
                                         <DataTemplate>
-                                            <Grid>
+                                            <Grid Padding="4">
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="70"/>
-                                                    <ColumnDefinition Width="60"/>
+                                                    <ColumnDefinition Width="100"/>
+                                                    <ColumnDefinition Width="100"/>
                                                     <ColumnDefinition Width="*"/>
                                                 </Grid.ColumnDefinitions>
-                                                <TextBlock Text="{Binding Identity}" Foreground="#AA44FF" FontFamily="Consolas" FontSize="7"/>
-                                                <TextBlock Text="{Binding Resource}" Grid.Column="1" Foreground="#00FFFF" FontFamily="Consolas" FontSize="7"/>
-                                                <TextBlock Text="{Binding Access}" Grid.Column="2" Foreground="#00FF00" FontFamily="Consolas" FontSize="7"/>
+                                                <TextBlock Text="{Binding Identity}" Foreground="#AA44FF" FontFamily="Consolas" FontSize="11"/>
+                                                <TextBlock Text="{Binding Resource}" Grid.Column="1" Foreground="#00FFFF" FontFamily="Consolas" FontSize="11"/>
+                                                <TextBlock Text="{Binding Access}" Grid.Column="2" Foreground="#00FF00" FontFamily="Consolas" FontSize="11"/>
                                             </Grid>
                                         </DataTemplate>
                                     </ListView.ItemTemplate>
@@ -549,90 +595,134 @@
                 </ScrollViewer>
             </PivotItem>
 
-            <!-- TAB 4: ANALYTICS -->
-            <PivotItem Header="ANALYTICS">
+            <!-- TAB 4: SOFIA AI -->
+            <PivotItem Header="🧠 SOFIA AI">
                 <ScrollViewer>
-                    <StackPanel Margin="2">
-                        <!-- Top Talkers -->
-                        <Border Style="{StaticResource MatrixBorderStyle}" Padding="6" Margin="0,0,0,4">
+                    <StackPanel Margin="4" Spacing="8">
+                        <!-- AI Chat Interface -->
+                        <Border Style="{StaticResource MatrixBorderStyle}" BorderBrush="#00CCFF">
                             <StackPanel>
-                                <TextBlock Text="► TOP TALKERS" FontSize="9" Style="{StaticResource MatrixLabelStyle}" Margin="0,0,0,3"/>
-                                <ListView x:Name="TopHostsListView" MaxHeight="60" Background="Transparent" SelectionMode="None">
-                                    <ListView.ItemTemplate>
-                                        <DataTemplate>
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="80"/>
-                                                    <ColumnDefinition Width="45"/>
-                                                    <ColumnDefinition Width="*"/>
-                                                </Grid.ColumnDefinitions>
-                                                <TextBlock Text="{Binding Host}" Foreground="#00FF00" FontFamily="Consolas" FontSize="7"/>
-                                                <TextBlock Text="{Binding Traffic}" Grid.Column="1" Foreground="#00FFFF" FontFamily="Consolas" FontSize="7"/>
-                                                <ProgressBar Grid.Column="2" Value="{Binding Percentage}" Maximum="100" Height="4" Foreground="#00FF00" Background="#002200" Margin="2,0,0,0"/>
-                                            </Grid>
-                                        </DataTemplate>
-                                    </ListView.ItemTemplate>
-                                </ListView>
-                            </StackPanel>
-                        </Border>
+                                <Grid Margin="0,0,0,10">
+                                    <TextBlock Text="► SOFIA AI ASSISTANT" FontSize="16" Foreground="#00CCFF" FontFamily="Consolas" FontWeight="Bold"/>
+                                    <TextBlock Text="Powered by LLaMA 3.2" Foreground="#006688" FontFamily="Consolas" FontSize="10" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                </Grid>
+                                <!-- AI Response Area -->
+                                <Border Background="#001520" BorderBrush="#00AACC" BorderThickness="2" CornerRadius="8" Padding="12" MinHeight="200" Margin="0,0,0,10">
+                                    <ScrollViewer MaxHeight="300">
+                                        <TextBlock x:Name="AIAnalysisText" Text="[SOFIA] Merhaba! Ben SOFIA, ağ güvenliği AI asistanınızım. Size şu konularda yardımcı olabilirim:
 
-                        <!-- Application/Protocol Breakdown -->
-                        <Border Style="{StaticResource MatrixBorderStyle}" Padding="6" Margin="0,0,0,4">
-                            <StackPanel>
-                                <TextBlock Text="► APPLICATION BREAKDOWN" FontSize="9" Style="{StaticResource MatrixLabelStyle}" Margin="0,0,0,3"/>
-                                <ListView x:Name="AppBreakdownListView" MaxHeight="60" Background="Transparent" SelectionMode="None">
-                                    <ListView.ItemTemplate>
-                                        <DataTemplate>
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="60"/>
-                                                    <ColumnDefinition Width="45"/>
-                                                    <ColumnDefinition Width="*"/>
-                                                </Grid.ColumnDefinitions>
-                                                <TextBlock Text="{Binding App}" Foreground="#FFAA00" FontFamily="Consolas" FontSize="7"/>
-                                                <TextBlock Text="{Binding Traffic}" Grid.Column="1" Foreground="#00FFFF" FontFamily="Consolas" FontSize="7"/>
-                                                <ProgressBar Grid.Column="2" Value="{Binding Percentage}" Maximum="100" Height="4" Foreground="#FFAA00" Background="#221100" Margin="2,0,0,0"/>
-                                            </Grid>
-                                        </DataTemplate>
-                                    </ListView.ItemTemplate>
-                                </ListView>
-                            </StackPanel>
-                        </Border>
+• 🔍 Trafik analizi ve anomali tespiti
+• 🛡️ Güvenlik risk değerlendirmesi
+• 📊 Ağ performans optimizasyonu
+• 🚨 Tehdit avlama ve incident response
+• 📝 Firewall kural önerileri
+• 📈 Rapor ve özet oluşturma
 
-                        <!-- Conversation View -->
-                        <Border Style="{StaticResource MatrixBorderStyle}" Padding="6" Margin="0,0,0,4">
-                            <StackPanel>
-                                <TextBlock Text="► CONVERSATIONS" FontSize="9" Style="{StaticResource MatrixLabelStyle}" Margin="0,0,0,3"/>
-                                <ListView x:Name="ConversationListView" MaxHeight="60" Background="Transparent" SelectionMode="None">
-                                    <ListView.ItemTemplate>
-                                        <DataTemplate>
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="70"/>
-                                                    <ColumnDefinition Width="20"/>
-                                                    <ColumnDefinition Width="70"/>
-                                                    <ColumnDefinition Width="*"/>
-                                                </Grid.ColumnDefinitions>
-                                                <TextBlock Text="{Binding HostA}" Foreground="#00FF00" FontFamily="Consolas" FontSize="7"/>
-                                                <TextBlock Text="↔" Grid.Column="1" Foreground="#666666" FontFamily="Consolas" FontSize="7" HorizontalAlignment="Center"/>
-                                                <TextBlock Text="{Binding HostB}" Grid.Column="2" Foreground="#00FFFF" FontFamily="Consolas" FontSize="7"/>
-                                                <TextBlock Text="{Binding Stats}" Grid.Column="3" Foreground="#888888" FontFamily="Consolas" FontSize="7"/>
-                                            </Grid>
-                                        </DataTemplate>
-                                    </ListView.ItemTemplate>
-                                </ListView>
-                            </StackPanel>
-                        </Border>
-
-                        <!-- SOFIA AI -->
-                        <Border Style="{StaticResource MatrixBorderStyle}" Padding="6" BorderBrush="#00AAFF">
-                            <StackPanel>
-                                <TextBlock Text="► SOFIA AI ANALYSIS" FontSize="9" Foreground="#00AAFF" FontFamily="Consolas" FontWeight="Bold" Margin="0,0,0,3"/>
-                                <Border Background="#000A0F" BorderBrush="#00AAFF" BorderThickness="1" Padding="4" MinHeight="50">
-                                    <ScrollViewer MaxHeight="80">
-                                        <TextBlock x:Name="AIAnalysisText" Text="[SOFIA] Ready for analysis..." Foreground="#00AAFF" FontFamily="Consolas" FontSize="7" TextWrapping="Wrap"/>
+Nasıl yardımcı olabilirim?" 
+                                                   Foreground="#00CCFF" FontFamily="Consolas" FontSize="13" TextWrapping="Wrap" LineHeight="22"/>
                                     </ScrollViewer>
                                 </Border>
+                                <!-- AI Input -->
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox x:Name="AIQueryTextBox" Style="{StaticResource MatrixTextBoxStyle}" 
+                                             PlaceholderText="Sorunuzu yazın... (örn: 'Son trafiği analiz et' veya 'Güvenlik raporu oluştur')"
+                                             KeyDown="AIQueryTextBox_KeyDown"/>
+                                    <Button Grid.Column="1" Content="🚀 GÖNDER" Style="{StaticResource AIButtonStyle}" Margin="8,0,0,0" Click="AIAnalyzeButton_Click"/>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- AI Quick Actions -->
+                        <Border Style="{StaticResource MatrixBorderStyle}" BorderBrush="#00AACC">
+                            <StackPanel>
+                                <TextBlock Text="► QUICK AI ACTIONS" FontSize="14" Foreground="#00CCFF" FontFamily="Consolas" FontWeight="Bold" Margin="0,0,0,10"/>
+                                <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,0,0,8">
+                                    <Button Content="📊 Trafik Analizi" Style="{StaticResource AIButtonStyle}" Click="AIQuickAnalyze_Click" Tag="traffic"/>
+                                    <Button Content="🛡️ Güvenlik Taraması" Style="{StaticResource AIButtonStyle}" Click="AIQuickAnalyze_Click" Tag="security"/>
+                                    <Button Content="🔥 Firewall Önerisi" Style="{StaticResource AIButtonStyle}" Click="AIQuickAnalyze_Click" Tag="firewall"/>
+                                    <Button Content="📝 Özet Rapor" Style="{StaticResource AIButtonStyle}" Click="AIQuickAnalyze_Click" Tag="summary"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <Button Content="🎯 Anomali Tespiti" Style="{StaticResource AIButtonStyle}" Click="AIQuickAnalyze_Click" Tag="anomaly"/>
+                                    <Button Content="📈 Performans" Style="{StaticResource AIButtonStyle}" Click="AIQuickAnalyze_Click" Tag="performance"/>
+                                    <Button Content="🔍 Top Talkers" Style="{StaticResource AIButtonStyle}" Click="AIQuickAnalyze_Click" Tag="toptalkers"/>
+                                    <Button Content="⚠️ Incident Report" Style="{StaticResource AIButtonStyle}" Click="AIQuickAnalyze_Click" Tag="incident"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Top Talkers -->
+                        <Border Style="{StaticResource MatrixBorderStyle}">
+                            <StackPanel>
+                                <TextBlock Text="► TOP TALKERS" FontSize="14" Style="{StaticResource MatrixLabelStyle}" Margin="0,0,0,10"/>
+                                <ListView x:Name="TopHostsListView" MaxHeight="120" Background="#050505" SelectionMode="None">
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Padding="4">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="140"/>
+                                                    <ColumnDefinition Width="80"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="{Binding Host}" Foreground="#00FF00" FontFamily="Consolas" FontSize="12"/>
+                                                <TextBlock Text="{Binding Traffic}" Grid.Column="1" Foreground="#00FFFF" FontFamily="Consolas" FontSize="12"/>
+                                                <ProgressBar Grid.Column="2" Value="{Binding Percentage}" Maximum="100" Height="8" Foreground="#00FF00" Background="#002200" CornerRadius="4" Margin="8,0,0,0"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Application Breakdown -->
+                        <Border Style="{StaticResource MatrixBorderStyle}">
+                            <StackPanel>
+                                <TextBlock Text="► APPLICATION BREAKDOWN" FontSize="14" Style="{StaticResource MatrixLabelStyle}" Margin="0,0,0,10"/>
+                                <ListView x:Name="AppBreakdownListView" MaxHeight="120" Background="#050505" SelectionMode="None">
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Padding="4">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="100"/>
+                                                    <ColumnDefinition Width="80"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="{Binding App}" Foreground="#FFAA00" FontFamily="Consolas" FontSize="12"/>
+                                                <TextBlock Text="{Binding Traffic}" Grid.Column="1" Foreground="#00FFFF" FontFamily="Consolas" FontSize="12"/>
+                                                <ProgressBar Grid.Column="2" Value="{Binding Percentage}" Maximum="100" Height="8" Foreground="#FFAA00" Background="#221100" CornerRadius="4" Margin="8,0,0,0"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Conversations -->
+                        <Border Style="{StaticResource MatrixBorderStyle}">
+                            <StackPanel>
+                                <TextBlock Text="► CONVERSATIONS" FontSize="14" Style="{StaticResource MatrixLabelStyle}" Margin="0,0,0,10"/>
+                                <ListView x:Name="ConversationListView" MaxHeight="120" Background="#050505" SelectionMode="None">
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Padding="4">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="120"/>
+                                                    <ColumnDefinition Width="30"/>
+                                                    <ColumnDefinition Width="120"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="{Binding HostA}" Foreground="#00FF00" FontFamily="Consolas" FontSize="11"/>
+                                                <TextBlock Text="↔" Grid.Column="1" Foreground="#888888" FontFamily="Consolas" FontSize="14" HorizontalAlignment="Center"/>
+                                                <TextBlock Text="{Binding HostB}" Grid.Column="2" Foreground="#00FFFF" FontFamily="Consolas" FontSize="11"/>
+                                                <TextBlock Text="{Binding Stats}" Grid.Column="3" Foreground="#AAAAAA" FontFamily="Consolas" FontSize="11"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
                             </StackPanel>
                         </Border>
                     </StackPanel>
@@ -641,7 +731,7 @@
         </Pivot>
 
         <!-- Right Panel - Terminal & Alerts -->
-        <Grid Grid.Row="1" Grid.Column="1" Margin="2,4,4,4">
+        <Grid Grid.Row="1" Grid.Column="1" Margin="4,8,8,8">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
@@ -654,11 +744,14 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <Border Background="#001100" Padding="4,2">
+                    <Border Background="#001500" CornerRadius="4,4,0,0" Padding="10,6">
                         <Grid>
-                            <TextBlock Text="► TERMINAL" Style="{StaticResource MatrixLabelStyle}" FontSize="8"/>
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                <ComboBox x:Name="FilterComboBox" Style="{StaticResource MatrixComboBoxStyle}" Width="45" FontSize="7" SelectionChanged="FilterComboBox_SelectionChanged">
+                            <TextBlock Text="► TERMINAL OUTPUT" Style="{StaticResource MatrixLabelStyle}" FontSize="12"/>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+                                <CheckBox x:Name="AutoScrollCheckBox" IsChecked="True" MinWidth="0" Height="20" Width="57">
+                                    <TextBlock Text="Auto ↓" Foreground="#00FF00" FontFamily="Consolas" FontSize="10"/>
+                                </CheckBox>
+                                <ComboBox x:Name="FilterComboBox" Style="{StaticResource MatrixComboBoxStyle}" Width="70" FontSize="10" SelectionChanged="FilterComboBox_SelectionChanged">
                                     <ComboBoxItem Content="ALL" IsSelected="True"/>
                                     <ComboBoxItem Content="TCP"/>
                                     <ComboBoxItem Content="UDP"/>
@@ -666,28 +759,28 @@
                                     <ComboBoxItem Content="DNS"/>
                                     <ComboBoxItem Content="HTTP"/>
                                 </ComboBox>
-                                <Button Content="C" Style="{StaticResource MatrixButtonStyle}" Padding="2,0" Margin="2,0,0,0" Click="ClearTerminalButton_Click"/>
+                                <Button Content="CLR" Style="{StaticResource MatrixButtonStyle}" Padding="8,4" MinWidth="40" MinHeight="28" Click="ClearTerminalButton_Click"/>
                             </StackPanel>
                         </Grid>
                     </Border>
-                    <ScrollViewer x:Name="TerminalScrollViewer" Grid.Row="1" Background="#020202" Padding="3">
-                        <TextBlock x:Name="TerminalOutput" Style="{StaticResource MatrixTextStyle}" FontSize="6" TextWrapping="Wrap"
-                                   Text="[SYS] Rootcastle v6.0 Enterprise&#x0a;[SYS] Powered by /REI&#x0a;[SYS] All modules loaded&#x0a;[SYS] Ready..."/>
+                    <ScrollViewer x:Name="TerminalScrollViewer" Grid.Row="1" Background="#020402" Padding="8">
+                        <TextBlock x:Name="TerminalOutput" Style="{StaticResource MatrixTextStyle}" FontSize="11" TextWrapping="Wrap" LineHeight="18"
+                                   Text="[SYS] Rootcastle v6.0 Enterprise&#x0a;[SYS] Powered by /REI&#x0a;[SYS] SOFIA AI Engine loaded&#x0a;[SYS] All modules initialized&#x0a;[SYS] Ready for monitoring..."/>
                     </ScrollViewer>
                 </Grid>
             </Border>
 
             <!-- Alerts -->
-            <Border Grid.Row="1" Style="{StaticResource MatrixBorderStyle}" Margin="0,3,0,0" BorderBrush="#FF6600">
-                <StackPanel Padding="4">
-                    <Grid>
-                        <TextBlock Text="► ALERTS" FontSize="8" Foreground="#FF6600" FontFamily="Consolas" FontWeight="Bold"/>
-                        <TextBlock x:Name="AlertCountText" Text="[0]" Foreground="#FF6600" FontFamily="Consolas" FontSize="7" HorizontalAlignment="Right"/>
+            <Border Grid.Row="1" Style="{StaticResource MatrixBorderStyle}" Margin="0,8,0,0" BorderBrush="#FF6600">
+                <StackPanel>
+                    <Grid Margin="0,0,0,8">
+                        <TextBlock Text="► ALERTS" FontSize="13" Foreground="#FF6600" FontFamily="Consolas" FontWeight="Bold"/>
+                        <TextBlock x:Name="AlertCountText" Text="[0]" Foreground="#FF6600" FontFamily="Consolas" FontSize="12" HorizontalAlignment="Right"/>
                     </Grid>
-                    <ListView x:Name="AlertsListView" MaxHeight="60" Background="Transparent" SelectionMode="None" Margin="0,2,0,0">
+                    <ListView x:Name="AlertsListView" MaxHeight="120" Background="#0A0500" SelectionMode="None">
                         <ListView.ItemTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding}" Foreground="#FF6600" FontFamily="Consolas" FontSize="6" TextWrapping="Wrap"/>
+                                <TextBlock Text="{Binding}" Foreground="#FF6600" FontFamily="Consolas" FontSize="11" TextWrapping="Wrap" Padding="4"/>
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>
@@ -696,7 +789,7 @@
         </Grid>
 
         <!-- Status Bar -->
-        <Border Grid.Row="2" Grid.ColumnSpan="2" Background="#001100" BorderBrush="#00FF00" BorderThickness="0,2,0,0" Padding="6,2">
+        <Border Grid.Row="2" Grid.ColumnSpan="2" Background="#001500" BorderBrush="#00FF00" BorderThickness="0,3,0,0" Padding="15,8">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -708,14 +801,23 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock x:Name="StatusText" Text="[READY]" Foreground="#00AA00" FontSize="7" FontFamily="Consolas"/>
-                <TextBlock x:Name="NmapStatusText" Text="" Foreground="#FF6600" FontSize="7" FontFamily="Consolas" Grid.Column="1" Margin="0,0,8,0"/>
-                <TextBlock x:Name="BytesPerSecText" Text="0 B/s" Foreground="#00FFFF" FontSize="7" FontFamily="Consolas" Grid.Column="2" Margin="0,0,8,0"/>
-                <TextBlock x:Name="RecordingStatusText" Text="" Foreground="#FF4444" FontSize="7" FontFamily="Consolas" Grid.Column="3" Margin="0,0,8,0"/>
-                <TextBlock x:Name="ErrorCountText" Text="E:0" Foreground="#FF0000" FontSize="7" FontFamily="Consolas" Grid.Column="4" Margin="0,0,8,0"/>
-                <TextBlock x:Name="UptimeText" Text="00:00:00" Foreground="#666666" FontSize="7" FontFamily="Consolas" Grid.Column="5" Margin="0,0,8,0"/>
-                <TextBlock x:Name="SecurityScoreText" Text="■■■■■" Foreground="#00FF00" FontSize="7" FontFamily="Consolas" Grid.Column="6" Margin="0,0,8,0"/>
-                <TextBlock Text="/REI v6.0" Foreground="#004400" FontSize="7" FontFamily="Consolas" Grid.Column="7"/>
+                <TextBlock x:Name="StatusText" Text="[READY]" Foreground="#00DD00" FontSize="12" FontFamily="Consolas" FontWeight="Bold"/>
+                <TextBlock x:Name="NmapStatusText" Text="" Foreground="#FF6600" FontSize="11" FontFamily="Consolas" Grid.Column="1" Margin="0,0,20,0"/>
+                <StackPanel Grid.Column="2" Orientation="Horizontal" Margin="0,0,20,0">
+                    <TextBlock Text="Speed: " Foreground="#666666" FontFamily="Consolas" FontSize="11"/>
+                    <TextBlock x:Name="BytesPerSecText" Text="0 B/s" Foreground="#00FFFF" FontFamily="Consolas" FontSize="11" FontWeight="Bold"/>
+                </StackPanel>
+                <TextBlock x:Name="RecordingStatusText" Text="" Foreground="#FF4444" FontSize="11" FontFamily="Consolas" FontWeight="Bold" Grid.Column="3" Margin="0,0,20,0"/>
+                <StackPanel Grid.Column="4" Orientation="Horizontal" Margin="0,0,20,0">
+                    <TextBlock Text="Errors: " Foreground="#666666" FontFamily="Consolas" FontSize="11"/>
+                    <TextBlock x:Name="ErrorCountText" Text="0" Foreground="#FF4444" FontFamily="Consolas" FontSize="11"/>
+                </StackPanel>
+                <StackPanel Grid.Column="5" Orientation="Horizontal" Margin="0,0,20,0">
+                    <TextBlock Text="Uptime: " Foreground="#666666" FontFamily="Consolas" FontSize="11"/>
+                    <TextBlock x:Name="UptimeText" Text="00:00:00" Foreground="#AAAAAA" FontFamily="Consolas" FontSize="11"/>
+                </StackPanel>
+                <TextBlock x:Name="SecurityScoreText" Text="Security: ■■■■■" Foreground="#00FF00" FontSize="11" FontFamily="Consolas" Grid.Column="6" Margin="0,0,20,0"/>
+                <TextBlock Text="/REI v6.0 • SOFIA AI" Foreground="#006600" FontSize="11" FontFamily="Consolas" Grid.Column="7"/>
             </Grid>
         </Border>
     </Grid>

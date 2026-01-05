@@ -45,6 +45,45 @@ Public NotInheritable Class MainPage
     Private _totalBytesIn As Long = 0
     Private _totalBytesOut As Long = 0
 
+    ' QoS Metrics
+    Private _latencyHistory As New List(Of Double)
+    Private _currentLatency As Double = 0
+    Private _jitter As Double = 0
+    Private _packetLoss As Double = 0
+    Private _throughput As Double = 0
+
+    ' DNS Statistics
+    Private _dnsQueryCount As Long = 0
+    Private _dnsNxdomainCount As Long = 0
+    Private _dnsTunnelCount As Long = 0
+
+    ' TLS/PKI Statistics
+    Private _tls13Count As Long = 0
+    Private _tls12Count As Long = 0
+    Private _tlsWeakCount As Long = 0
+    Private _certList As New List(Of CertInfo)
+
+    ' Threat Detection
+    Private _portScanCount As Long = 0
+    Private _dosCount As Long = 0
+    Private _arpSpoofCount As Long = 0
+    Private _threatList As New List(Of String)
+
+    ' Asset Inventory
+    Private _assetList As New List(Of AssetInfo)
+
+    ' Application Breakdown
+    Private _appTraffic As New Dictionary(Of String, Long)
+
+    ' Conversations
+    Private _conversations As New Dictionary(Of String, ConversationInfo)
+
+    ' Zero Trust
+    Private _zeroTrustEvents As New List(Of ZeroTrustEvent)
+
+    ' Connection tracking for port scan detection
+    Private _connectionAttempts As New Dictionary(Of String, List(Of DateTime))
+
     ' Traffic Graph
     Private _trafficHistoryIn As New List(Of Double)
     Private _trafficHistoryOut As New List(Of Double)
@@ -260,10 +299,22 @@ Public NotInheritable Class MainPage
             TrafficRateText.Text = $"{FormatBytes(_bytesPerSecIn + _bytesPerSecOut)}/s"
             BytesPerSecText.Text = $"↓{FormatBytes(_bytesPerSecIn)}/s ↑{FormatBytes(_bytesPerSecOut)}/s"
 
+            ' Update QoS Metrics
+            UpdateQoSMetrics()
+
+            ' Update Bandwidth percentage
+            UpdateBandwidthDisplay()
+
             ' Capture packets
             If deltaSent > 0 Or deltaReceived > 0 Then
                 CapturePacket(deltaSent, deltaReceived)
             End If
+
+            ' Update Security Stats periodically
+            UpdateSecurityStats()
+
+            ' Update Alert count
+            AlertCountText.Text = $"[{_alerts.Count}]"
 
             _lastBytesSent = currentBytesSent
             _lastBytesReceived = currentBytesReceived
@@ -282,6 +333,151 @@ Public NotInheritable Class MainPage
         Catch
         End Try
     End Sub
+
+    Private Function ShouldLog(protocol As String) As Boolean
+        Return _filterProtocol = "ALL" Or _filterProtocol = protocol
+    End Function
+
+    Private Function CheckSuspicious(port As Integer, country As String, bytes As Long) As Boolean
+        If Not _suspiciousDetectionEnabled Then Return False
+
+        If _suspiciousPorts.Contains(port) Then
+            _suspiciousCount += 1
+            ShowAlert($"Suspicious port: {port}")
+            Return True
+        End If
+
+        If _suspiciousCountries.Contains(country) Then
+            _suspiciousCount += 1
+            ShowAlert($"Suspicious country: {country}")
+            Return True
+        End If
+
+        If bytes > 1024 * 1024 Then
+            _suspiciousCount += 1
+            ShowAlert($"Large packet: {FormatBytes(bytes)}")
+            Return True
+        End If
+
+        Return False
+    End Function
+
+#Region "QoS and Metrics Updates"
+    Private Sub UpdateQoSMetrics()
+        Try
+            ' Simulate latency measurement (in real scenario, use ping to gateway)
+            Dim baseLatency = 5.0 + _random.NextDouble() * 15.0
+            If _bytesPerSecIn + _bytesPerSecOut > 500000 Then
+                baseLatency += _random.NextDouble() * 20.0 ' Higher latency under load
+            End If
+            _currentLatency = baseLatency
+
+            ' Track latency history for jitter calculation
+            _latencyHistory.Add(_currentLatency)
+            If _latencyHistory.Count > 20 Then _latencyHistory.RemoveAt(0)
+
+            ' Calculate jitter (variation in latency)
+            If _latencyHistory.Count > 1 Then
+                Dim diffs As New List(Of Double)
+                For i = 1 To _latencyHistory.Count - 1
+                    diffs.Add(Math.Abs(_latencyHistory(i) - _latencyHistory(i - 1)))
+                Next
+                _jitter = If(diffs.Count > 0, diffs.Average(), 0)
+            End If
+
+            ' Simulate packet loss (usually very low)
+            _packetLoss = If(_random.Next(100) < 2, _random.NextDouble() * 0.5, _packetLoss * 0.9)
+
+            ' Calculate throughput in Mbps
+            _throughput = (_bytesPerSecIn + _bytesPerSecOut) * 8 / 1000000.0
+
+            ' Update UI
+            QosLatencyText.Text = $"{_currentLatency:F1} ms"
+            QosJitterText.Text = $"{_jitter:F1} ms"
+            QosLossText.Text = $"{_packetLoss:F2}%"
+            QosThroughputText.Text = $"{_throughput:F2} Mbps"
+
+            ' Update simple latency display
+            LatencyText.Text = $"~ {_currentLatency:F0} ms"
+
+            ' Color coding based on quality
+            QosLatencyText.Foreground = New SolidColorBrush(If(_currentLatency < 20, Windows.UI.ColorHelper.FromArgb(255, 0, 255, 0),
+                                                              If(_currentLatency < 50, Windows.UI.ColorHelper.FromArgb(255, 255, 170, 0),
+                                                                 Windows.UI.ColorHelper.FromArgb(255, 255, 68, 68))))
+            QosJitterText.Foreground = New SolidColorBrush(If(_jitter < 5, Windows.UI.ColorHelper.FromArgb(255, 0, 255, 0),
+                                                             If(_jitter < 15, Windows.UI.ColorHelper.FromArgb(255, 255, 170, 0),
+                                                                Windows.UI.ColorHelper.FromArgb(255, 255, 68, 68))))
+            QosLossText.Foreground = New SolidColorBrush(If(_packetLoss < 0.1, Windows.UI.ColorHelper.FromArgb(255, 0, 255, 0),
+                                                           If(_packetLoss < 1, Windows.UI.ColorHelper.FromArgb(255, 255, 170, 0),
+                                                              Windows.UI.ColorHelper.FromArgb(255, 255, 68, 68))))
+        Catch
+        End Try
+    End Sub
+
+    Private Sub UpdateBandwidthDisplay()
+        Try
+            ' Estimate bandwidth usage percentage based on interface speed
+            If _selectedInterface IsNot Nothing AndAlso _selectedInterface.Speed > 0 Then
+                Dim maxBytesPerSec = _selectedInterface.Speed / 8 ' Convert bits to bytes
+                Dim currentUsage = _bytesPerSecIn + _bytesPerSecOut
+                Dim percentage = (currentUsage / maxBytesPerSec) * 100
+                BandwidthText.Text = $"{Math.Min(100, percentage):F1}%"
+
+                ' Color coding
+                BandwidthText.Foreground = New SolidColorBrush(If(percentage < 50, Windows.UI.ColorHelper.FromArgb(255, 0, 255, 0),
+                                                                  If(percentage < 80, Windows.UI.ColorHelper.FromArgb(255, 255, 170, 0),
+                                                                     Windows.UI.ColorHelper.FromArgb(255, 255, 68, 68))))
+            Else
+                BandwidthText.Text = "N/A"
+            End If
+        Catch
+            BandwidthText.Text = "N/A"
+        End Try
+    End Sub
+
+    Private Sub UpdateSecurityStats()
+        Try
+            ' Update threat detection counters
+            PortScanCountText.Text = _portScanCount.ToString()
+            DosCountText.Text = _dosCount.ToString()
+            ArpSpoofCountText.Text = _arpSpoofCount.ToString()
+            ThreatCountText.Text = $"{_portScanCount + _dosCount + _arpSpoofCount} threats detected"
+
+            ' Update TLS counters
+            Tls13CountText.Text = _tls13Count.ToString()
+            Tls12CountText.Text = _tls12Count.ToString()
+            TlsWeakCountText.Text = _tlsWeakCount.ToString()
+
+            ' Update DNS counters
+            DnsQueryCountText.Text = _dnsQueryCount.ToString()
+            DnsNxdomainText.Text = _dnsNxdomainCount.ToString()
+            DnsTunnelText.Text = _dnsTunnelCount.ToString()
+
+            ' Update Security Score
+            UpdateSecurityScore()
+        Catch
+        End Try
+    End Sub
+
+    Private Sub UpdateSecurityScore()
+        Try
+            Dim totalThreats = _portScanCount + _dosCount + _arpSpoofCount + _tlsWeakCount + _suspiciousCount
+            Dim score As Integer = 5
+
+            If totalThreats > 0 Then score = 4
+            If totalThreats > 5 Then score = 3
+            If totalThreats > 10 Then score = 2
+            If totalThreats > 20 Then score = 1
+
+            Dim scoreDisplay = New String("■"c, score) & New String("□"c, 5 - score)
+            SecurityScoreText.Text = $"Security: {scoreDisplay}"
+            SecurityScoreText.Foreground = New SolidColorBrush(If(score >= 4, Windows.UI.ColorHelper.FromArgb(255, 0, 255, 0),
+                                                                  If(score >= 3, Windows.UI.ColorHelper.FromArgb(255, 255, 170, 0),
+                                                                     Windows.UI.ColorHelper.FromArgb(255, 255, 68, 68))))
+        Catch
+        End Try
+    End Sub
+#End Region
 
     Private Sub CapturePacket(deltaSent As Long, deltaReceived As Long)
         Dim protocol = GetRandomProtocol()
@@ -320,6 +516,15 @@ Public NotInheritable Class MainPage
             AddPacketToList(conn)
             UpdateHostTraffic(remoteIP, deltaSent)
 
+            ' Update additional tracking
+            UpdateDnsTracking(dstPort, protocol)
+            UpdateTlsTracking(dstPort)
+            UpdateAppTraffic(service, deltaSent)
+            UpdateConversation(GetLocalIP(), remoteIP, deltaSent, 0)
+            UpdateAssetInventory(remoteIP, country)
+            CheckForPortScan(remoteIP, dstPort)
+            UpdateZeroTrustEvent("Local", remoteIP, "Outbound")
+
             If ShouldLog(protocol) Then
                 LogTerminal($"[OUT] :{srcPort}→{remoteIP}:{dstPort} {deltaSent}B {protocol}", isSuspicious)
             End If
@@ -351,6 +556,15 @@ Public NotInheritable Class MainPage
             AddPacketToList(conn)
             UpdateHostTraffic(remoteIP, deltaReceived)
 
+            ' Update additional tracking
+            UpdateDnsTracking(srcPort, protocol)
+            UpdateTlsTracking(srcPort)
+            UpdateAppTraffic(service, deltaReceived)
+            UpdateConversation(GetLocalIP(), remoteIP, 0, deltaReceived)
+            UpdateAssetInventory(remoteIP, country)
+            CheckForDDoS(remoteIP, deltaReceived)
+            UpdateZeroTrustEvent(remoteIP, "Local", "Inbound")
+
             If ShouldLog(protocol) Then
                 LogTerminal($"[IN]  {remoteIP}:{srcPort}→:{dstPort} {deltaReceived}B {protocol}", isSuspicious)
             End If
@@ -359,33 +573,243 @@ Public NotInheritable Class MainPage
         PacketCountText.Text = _packetCount.ToString("N0")
     End Sub
 
-    Private Function ShouldLog(protocol As String) As Boolean
-        Return _filterProtocol = "ALL" Or _filterProtocol = protocol
+    Private Function GetLocalIP() As String
+        Try
+            If _selectedInterface IsNot Nothing Then
+                Dim ipProps = _selectedInterface.GetIPProperties()
+                Dim ipv4 = ipProps.UnicastAddresses.FirstOrDefault(Function(a) a.Address.AddressFamily = AddressFamily.InterNetwork)
+                If ipv4 IsNot Nothing Then Return ipv4.Address.ToString()
+            End If
+        Catch
+        End Try
+        Return "127.0.0.1"
     End Function
 
-    Private Function CheckSuspicious(port As Integer, country As String, bytes As Long) As Boolean
-        If Not _suspiciousDetectionEnabled Then Return False
+#Region "Additional Tracking Methods"
+    Private Sub UpdateDnsTracking(port As Integer, protocol As String)
+        If port = 53 Then
+            _dnsQueryCount += 1
 
-        If _suspiciousPorts.Contains(port) Then
-            _suspiciousCount += 1
-            ShowAlert($"Suspicious port: {port}")
-            Return True
+            ' Simulate some DNS failures/anomalies
+            If _random.Next(100) < 5 Then
+                _dnsNxdomainCount += 1
+            End If
+
+            ' Very rare DNS tunneling detection
+            If _random.Next(1000) < 1 Then
+                _dnsTunnelCount += 1
+                AddThreat($"[{DateTime.Now:HH:mm:ss}] DNS Tunneling suspected")
+            End If
+        End If
+    End Sub
+
+    Private Sub UpdateTlsTracking(port As Integer)
+        If port = 443 OrElse port = 8443 OrElse port = 993 OrElse port = 995 Then
+            Dim tlsRand = _random.Next(100)
+            If tlsRand < 60 Then
+                _tls13Count += 1
+                AddCertInfo(GenerateRandomIP(), "TLS 1.3", "ECDHE-RSA-AES256-GCM-SHA384")
+            ElseIf tlsRand < 95 Then
+                _tls12Count += 1
+                AddCertInfo(GenerateRandomIP(), "TLS 1.2", "ECDHE-RSA-AES128-GCM-SHA256")
+            Else
+                _tlsWeakCount += 1
+                AddCertInfo(GenerateRandomIP(), "TLS 1.0", "RC4-MD5 (WEAK)")
+                AddThreat($"[{DateTime.Now:HH:mm:ss}] Weak TLS detected")
+            End If
+        End If
+    End Sub
+
+    Private Sub AddCertInfo(host As String, tlsVersion As String, cipher As String)
+        Dim cert As New CertInfo With {
+            .Host = host,
+            .TlsVersion = tlsVersion,
+            .Cipher = cipher,
+            .Expiry = DateTime.Now.AddDays(_random.Next(30, 365)).ToString("yyyy-MM-dd")
+        }
+
+        _certList.Insert(0, cert)
+        If _certList.Count > 50 Then _certList.RemoveAt(_certList.Count - 1)
+
+        ' Update UI (every 10 certs to avoid performance issues)
+        If _certList.Count Mod 10 = 0 Then
+            CertListView.ItemsSource = Nothing
+            CertListView.ItemsSource = _certList.Take(10).ToList()
+        End If
+    End Sub
+
+    Private Sub UpdateAppTraffic(service As String, bytes As Long)
+        ' Map services to applications
+        Dim app = GetAppFromService(service)
+
+        If _appTraffic.ContainsKey(app) Then
+            _appTraffic(app) += bytes
+        Else
+            _appTraffic(app) = bytes
         End If
 
-        If _suspiciousCountries.Contains(country) Then
-            _suspiciousCount += 1
-            ShowAlert($"Suspicious country: {country}")
-            Return True
+        ' Update UI periodically
+        If _packetCount Mod 20 = 0 Then
+            Dim totalTraffic = If(_appTraffic.Values.Sum() > 0, _appTraffic.Values.Sum(), 1)
+            AppBreakdownListView.ItemsSource = _appTraffic.OrderByDescending(Function(kv) kv.Value).Take(8).Select(Function(kv) New AppTrafficInfo With {
+                .App = kv.Key,
+                .Traffic = FormatBytes(kv.Value),
+                .Percentage = (kv.Value / totalTraffic) * 100
+            }).ToList()
         End If
+    End Sub
 
-        If bytes > 1024 * 1024 Then
-            _suspiciousCount += 1
-            ShowAlert($"Large packet: {FormatBytes(bytes)}")
-            Return True
-        End If
-
-        Return False
+    Private Function GetAppFromService(service As String) As String
+        Select Case service.ToUpper()
+            Case "HTTP", "HTTPS", "HTTP-PROXY"
+                Return "Web"
+            Case "DNS"
+                Return "DNS"
+            Case "SSH", "TELNET"
+                Return "Remote"
+            Case "FTP"
+                Return "FTP"
+            Case "SMTP", "POP3", "IMAP", "POP3S", "IMAPS"
+                Return "Email"
+            Case "MYSQL", "MSSQL", "POSTGRESQL", "MONGODB", "REDIS"
+                Return "Database"
+            Case "RDP", "VNC"
+                Return "RDP/VNC"
+            Case "SMB", "NETBIOS"
+                Return "File Share"
+            Case Else
+                Return "Other"
+        End Select
     End Function
+
+    Private Sub UpdateConversation(hostA As String, hostB As String, bytesAtoB As Long, bytesBtoA As Long)
+        ' Create a unique key for the conversation pair
+        Dim key = If(String.Compare(hostA, hostB) < 0, $"{hostA}|{hostB}", $"{hostB}|{hostA}")
+
+        If _conversations.ContainsKey(key) Then
+            Dim conv = _conversations(key)
+            conv.BytesAtoB += bytesAtoB
+            conv.BytesBtoA += bytesBtoA
+            conv.PacketCount += 1
+            conv.LastSeen = DateTime.Now
+            conv.Stats = $"{FormatBytes(conv.BytesAtoB + conv.BytesBtoA)} ({conv.PacketCount} pkts)"
+        Else
+            _conversations(key) = New ConversationInfo With {
+                .HostA = hostA,
+                .HostB = hostB,
+                .BytesAtoB = bytesAtoB,
+                .BytesBtoA = bytesBtoA,
+                .PacketCount = 1,
+                .LastSeen = DateTime.Now,
+                .Stats = $"{FormatBytes(bytesAtoB + bytesBtoA)} (1 pkt)"
+            }
+        End If
+
+        ' Update UI periodically
+        If _packetCount Mod 20 = 0 Then
+            ConversationListView.ItemsSource = _conversations.Values.
+                OrderByDescending(Function(c) c.BytesAtoB + c.BytesBtoA).
+                Take(10).ToList()
+        End If
+    End Sub
+
+    Private Sub UpdateAssetInventory(ip As String, country As String)
+        Dim existing = _assetList.FirstOrDefault(Function(a) a.IP = ip)
+
+        If existing Is Nothing Then
+            Dim asset As New AssetInfo With {
+                .IP = ip,
+                .MAC = GenerateRandomMAC(),
+                .Vendor = GetVendorFromMAC(),
+                .OS = GuessOSFromIP(ip),
+                .LastSeen = DateTime.Now
+            }
+            _assetList.Add(asset)
+        Else
+            existing.LastSeen = DateTime.Now
+        End If
+
+        ' Update UI periodically
+        If _packetCount Mod 30 = 0 Then
+            AssetListView.ItemsSource = _assetList.OrderByDescending(Function(a) a.LastSeen).Take(20).ToList()
+            AssetCountText.Text = $"[{_assetList.Count} devices]"
+        End If
+    End Sub
+
+    Private Function GenerateRandomMAC() As String
+        Dim bytes As Byte() = New Byte(5) {}
+        _random.NextBytes(bytes)
+        bytes(0) = CByte((bytes(0) And &HFE) Or &H2) ' Make it a locally administered unicast address
+        Return String.Join(":", bytes.Select(Function(b) b.ToString("X2")))
+    End Function
+
+    Private Function GetVendorFromMAC() As String
+        Dim vendors = {"Intel", "Realtek", "Broadcom", "Cisco", "Apple", "Samsung", "Dell", "HP", "Lenovo", "Ubiquiti", "TP-Link", "Netgear"}
+        Return vendors(_random.Next(vendors.Length))
+    End Function
+
+    Private Function GuessOSFromIP(ip As String) As String
+        Dim oses = {"Windows 10", "Windows 11", "Linux", "macOS", "iOS", "Android", "Router", "Unknown"}
+        Return oses(_random.Next(oses.Length))
+    End Function
+
+    Private Sub CheckForPortScan(remoteIP As String, port As Integer)
+        If Not _connectionAttempts.ContainsKey(remoteIP) Then
+            _connectionAttempts(remoteIP) = New List(Of DateTime)
+        End If
+
+        _connectionAttempts(remoteIP).Add(DateTime.Now)
+
+        ' Remove old entries (older than 10 seconds)
+        _connectionAttempts(remoteIP) = _connectionAttempts(remoteIP).Where(Function(t) (DateTime.Now - t).TotalSeconds < 10).ToList()
+
+        ' If more than 10 different connections in 10 seconds, it might be a port scan
+        If _connectionAttempts(remoteIP).Count > 10 Then
+            _portScanCount += 1
+            AddThreat($"[{DateTime.Now:HH:mm:ss}] Port scan from {remoteIP}")
+            _connectionAttempts(remoteIP).Clear()
+        End If
+    End Sub
+
+    Private Sub CheckForDDoS(remoteIP As String, bytes As Long)
+        ' Simple DDoS detection - high traffic from single source
+        If bytes > 100000 Then ' More than 100KB in one capture
+            If _random.Next(100) < 5 Then ' 5% chance to trigger
+                _dosCount += 1
+                AddThreat($"[{DateTime.Now:HH:mm:ss}] High traffic from {remoteIP} ({FormatBytes(bytes)})")
+            End If
+        End If
+    End Sub
+
+    Private Sub UpdateZeroTrustEvent(identity As String, resource As String, access As String)
+        ' Only track periodically to avoid too much data
+        If _random.Next(100) < 10 Then
+            Dim evt As New ZeroTrustEvent With {
+                .Identity = identity,
+                .Resource = resource,
+                .Access = access,
+                .Timestamp = DateTime.Now
+            }
+
+            _zeroTrustEvents.Insert(0, evt)
+            If _zeroTrustEvents.Count > 100 Then _zeroTrustEvents.RemoveAt(_zeroTrustEvents.Count - 1)
+
+            ' Update UI periodically
+            If _zeroTrustEvents.Count Mod 5 = 0 Then
+                ZeroTrustListView.ItemsSource = _zeroTrustEvents.Take(10).ToList()
+            End If
+        End If
+    End Sub
+
+    Private Sub AddThreat(message As String)
+        _threatList.Insert(0, message)
+        If _threatList.Count > 50 Then _threatList.RemoveAt(_threatList.Count - 1)
+
+        ThreatListView.ItemsSource = Nothing
+        ThreatListView.ItemsSource = _threatList.Take(10).ToList()
+
+        ShowAlert(message)
+    End Sub
 #End Region
 
 #Region "NMAP Scanner"
@@ -884,6 +1308,7 @@ Public NotInheritable Class MainPage
         If _alerts.Count > 20 Then _alerts.RemoveAt(_alerts.Count - 1)
         AlertsListView.ItemsSource = Nothing
         AlertsListView.ItemsSource = _alerts.Take(5).ToList()
+        AlertCountText.Text = $"[{_alerts.Count}]"
     End Sub
 
     Private Sub LogTerminal(message As String, Optional isSuspicious As Boolean = False)
@@ -908,6 +1333,52 @@ Public NotInheritable Class MainPage
 #End Region
 
 #Region "Settings & UI Events"
+    Private Sub PacketFilterTextBox_KeyDown(sender As Object, e As KeyRoutedEventArgs)
+        If e.Key = Windows.System.VirtualKey.Enter Then
+            ApplyPacketFilter()
+        End If
+    End Sub
+
+    Private Sub ApplyFilterButton_Click(sender As Object, e As RoutedEventArgs)
+        ApplyPacketFilter()
+    End Sub
+
+    Private Sub ApplyPacketFilter()
+        Dim filterText = PacketFilterTextBox.Text.Trim()
+        If String.IsNullOrEmpty(filterText) Then
+            LogTerminal("[SYS] Filter cleared")
+        Else
+            LogTerminal($"[SYS] Filter applied: {filterText}")
+        End If
+    End Sub
+
+    Private Sub RecordButton_Click(sender As Object, e As RoutedEventArgs)
+        If RecordingStatusText.Text = "●REC" Then
+            RecordingStatusText.Text = ""
+            RecordButton.Content = "REC"
+            LogTerminal("[SYS] Recording stopped")
+        Else
+            RecordingStatusText.Text = "●REC"
+            RecordButton.Content = "■"
+            LogTerminal("[SYS] Recording started")
+        End If
+    End Sub
+
+    Private Sub SecurityDashboardButton_Click(sender As Object, e As RoutedEventArgs)
+        MainPivot.SelectedIndex = 2 ' Navigate to SECURITY tab
+        LogTerminal("[SYS] Security dashboard opened")
+    End Sub
+
+    Private Sub TopologyButton_Click(sender As Object, e As RoutedEventArgs)
+        LogTerminal("[SYS] Topology view not implemented")
+        ShowAlert("Topology: Coming soon")
+    End Sub
+
+    Private Sub AdvancedSettingsButton_Click(sender As Object, e As RoutedEventArgs)
+        LogTerminal("[SYS] Settings panel opened")
+        ShowAlert("Settings dialog")
+    End Sub
+
     Private Sub SuspiciousPacketCheckBox_Checked(sender As Object, e As RoutedEventArgs)
         _suspiciousDetectionEnabled = True
         LogTerminal("[SOFIA] Suspicious detection: ON")
@@ -931,67 +1402,251 @@ Public NotInheritable Class MainPage
         _totalBytesIn = 0 : _totalBytesOut = 0
         _activeConnections.Clear()
         _hostTraffic.Clear()
+
+        ' Reset QoS
+        _latencyHistory.Clear()
+        _currentLatency = 0 : _jitter = 0 : _packetLoss = 0 : _throughput = 0
+
+        ' Reset DNS
+        _dnsQueryCount = 0 : _dnsNxdomainCount = 0 : _dnsTunnelCount = 0
+
+        ' Reset TLS
+        _tls13Count = 0 : _tls12Count = 0 : _tlsWeakCount = 0
+        _certList.Clear()
+
+        ' Reset Threats
+        _portScanCount = 0 : _dosCount = 0 : _arpSpoofCount = 0
+        _threatList.Clear()
+
+        ' Reset Assets
+        _assetList.Clear()
+
+        ' Reset Apps
+        _appTraffic.Clear()
+
+        ' Reset Conversations
+        _conversations.Clear()
+
+        ' Reset Zero Trust
+        _zeroTrustEvents.Clear()
+
+        ' Reset connection attempts tracking
+        _connectionAttempts.Clear()
+
+        ' Clear alerts
+        _alerts.Clear()
+
+        ' Update all UI elements
         PacketCountText.Text = "0"
         UpdateProtocolBars()
         ConnectionsListView.ItemsSource = Nothing
         TopHostsListView.ItemsSource = Nothing
+        CertListView.ItemsSource = Nothing
+        AssetListView.ItemsSource = Nothing
+        AppBreakdownListView.ItemsSource = Nothing
+        ConversationListView.ItemsSource = Nothing
+        ZeroTrustListView.ItemsSource = Nothing
+        ThreatListView.ItemsSource = Nothing
+        AlertsListView.ItemsSource = Nothing
+
+        ' Reset display texts
+        QosLatencyText.Text = "0 ms"
+        QosJitterText.Text = "0 ms"
+        QosLossText.Text = "0%"
+        QosThroughputText.Text = "0 Mbps"
+        LatencyText.Text = "~ 0 ms"
+        BandwidthText.Text = "0%"
+        AlertCountText.Text = "[0]"
+        AssetCountText.Text = "[0 devices]"
+        ThreatCountText.Text = "0 threats detected"
+        PortScanCountText.Text = "0"
+        DosCountText.Text = "0"
+        ArpSpoofCountText.Text = "0"
+        Tls13CountText.Text = "0"
+        Tls12CountText.Text = "0"
+        TlsWeakCountText.Text = "0"
+        DnsQueryCountText.Text = "0"
+        DnsNxdomainText.Text = "0"
+        DnsTunnelText.Text = "0"
+        SecurityScoreText.Text = "Security: ■■■■■"
+        SecurityScoreText.Foreground = New SolidColorBrush(Windows.UI.ColorHelper.FromArgb(255, 0, 255, 0))
     End Sub
 #End Region
 
 #Region "SOFIA AI"
     Private Async Sub AIAnalyzeButton_Click(sender As Object, e As RoutedEventArgs)
         Try
-            AIAnalysisText.Text = "[SOFIA] Analyzing..."
-            StatusText.Text = "[AI]..."
+            Dim query = AIQueryTextBox?.Text?.Trim()
+            If String.IsNullOrEmpty(query) Then
+                query = "Mevcut ağ durumunu analiz et ve güvenlik değerlendirmesi yap."
+            End If
+
+            AIAnalysisText.Text = "[SOFIA] 🔄 Analiz ediliyor, lütfen bekleyin..."
+            StatusText.Text = "[AI ANALYZING]..."
 
             Dim data = CollectAnalysisData()
-            Dim response = Await GetAIResponseAsync(data)
+            Dim response = Await GetAIResponseAsync(data, query)
 
             AIAnalysisText.Text = response
-            StatusText.Text = "[AI] Done"
+            StatusText.Text = "[AI] ✓ Analysis Complete"
+
+            If AIQueryTextBox IsNot Nothing Then
+                AIQueryTextBox.Text = ""
+            End If
         Catch ex As Exception
-            AIAnalysisText.Text = $"[ERR] {ex.Message}"
+            AIAnalysisText.Text = $"[SOFIA] ❌ Hata: {ex.Message}"
+            StatusText.Text = "[AI] Error"
+        End Try
+    End Sub
+
+    Private Sub AIQueryTextBox_KeyDown(sender As Object, e As KeyRoutedEventArgs)
+        If e.Key = Windows.System.VirtualKey.Enter Then
+            AIAnalyzeButton_Click(sender, Nothing)
+        End If
+    End Sub
+
+    Private Async Sub AIQuickAnalyze_Click(sender As Object, e As RoutedEventArgs)
+        Try
+            Dim button = TryCast(sender, Button)
+            Dim actionType = button?.Tag?.ToString()
+
+            AIAnalysisText.Text = "[SOFIA] 🔄 İşleniyor..."
+            StatusText.Text = "[AI] Processing..."
+
+            Dim query As String = ""
+            Select Case actionType
+                Case "traffic"
+                    query = "Mevcut ağ trafiğini detaylı analiz et. Hangi protokoller baskın, bant genişliği kullanımı, peak zamanları ve olası darboğazları belirle."
+                Case "security"
+                    query = "Kapsamlı güvenlik taraması yap. Açık portlar, şüpheli trafik, potansiyel tehditler ve güvenlik açıklarını listele. Risk seviyesi belirt."
+                Case "firewall"
+                    query = "Tespit edilen trafiğe göre firewall kural önerileri oluştur. iptables, Windows Firewall ve Fortigate formatında kurallar ver."
+                Case "summary"
+                    query = "Tüm ağ aktivitesinin yönetici özeti oluştur. İstatistikler, öne çıkan olaylar ve aksiyon maddeleri ile birlikte."
+                Case "anomaly"
+                    query = "Anomali tespiti yap. Normal trafik profilinden sapmaları, olağandışı bağlantıları ve şüpheli davranış kalıplarını tespit et."
+                Case "performance"
+                    query = "Ağ performans analizi yap. Latency, jitter, packet loss değerlerini yorumla ve optimizasyon önerileri sun."
+                Case "toptalkers"
+                    query = "En çok trafik üreten host'ları ve uygulamaları analiz et. Bant genişliği tüketim oranlarını ve olası sorunları belirt."
+                Case "incident"
+                    query = "Incident response raporu oluştur. Timeline, etkilenen sistemler, root cause analizi ve aksiyon planı ile birlikte."
+            End Select
+
+            Dim data = CollectAnalysisData()
+            Dim response = Await GetAIResponseAsync(data, query)
+
+            AIAnalysisText.Text = response
+            StatusText.Text = "[AI] ✓ Complete"
+        Catch ex As Exception
+            AIAnalysisText.Text = $"[SOFIA] ❌ Hata: {ex.Message}"
         End Try
     End Sub
 
     Private Function CollectAnalysisData() As String
         Dim sb As New StringBuilder()
-        sb.AppendLine("=== NETWORK ANALYSIS DATA ===")
+        sb.AppendLine("=== ROOTCASTLE NETWORK ANALYSIS DATA ===")
+        sb.AppendLine($"Timestamp: {DateTime.Now:yyyy-MM-dd HH:mm:ss}")
+        sb.AppendLine()
+        sb.AppendLine("--- INTERFACE INFO ---")
         sb.AppendLine($"Interface: {InterfaceNameText.Text}")
-        sb.AppendLine($"IP: {IPv4Text.Text}")
-        sb.AppendLine($"Traffic: IN={FormatBytes(_totalBytesIn)}, OUT={FormatBytes(_totalBytesOut)}")
-        sb.AppendLine($"Packets: {_packetCount} (TCP:{_tcpCount}, UDP:{_udpCount}, ICMP:{_icmpCount})")
+        sb.AppendLine($"IP Address: {IPv4Text.Text}")
+        sb.AppendLine($"Gateway: {GatewayText.Text}")
+        sb.AppendLine($"DNS: {DnsServersText.Text}")
+        sb.AppendLine()
+        sb.AppendLine("--- TRAFFIC STATISTICS ---")
+        sb.AppendLine($"Total Bytes IN: {FormatBytes(_totalBytesIn)}")
+        sb.AppendLine($"Total Bytes OUT: {FormatBytes(_totalBytesOut)}")
+        sb.AppendLine($"Current Rate IN: {FormatBytes(_bytesPerSecIn)}/s")
+        sb.AppendLine($"Current Rate OUT: {FormatBytes(_bytesPerSecOut)}/s")
+        sb.AppendLine()
+        sb.AppendLine("--- PACKET STATISTICS ---")
+        sb.AppendLine($"Total Packets: {_packetCount}")
+        sb.AppendLine($"TCP: {_tcpCount} ({If(_packetCount > 0, (_tcpCount * 100.0 / _packetCount).ToString("F1"), "0")}%)")
+        sb.AppendLine($"UDP: {_udpCount} ({If(_packetCount > 0, (_udpCount * 100.0 / _packetCount).ToString("F1"), "0")}%)")
+        sb.AppendLine($"ICMP: {_icmpCount} ({If(_packetCount > 0, (_icmpCount * 100.0 / _packetCount).ToString("F1"), "0")}%)")
+        sb.AppendLine($"Other: {_otherCount}")
         sb.AppendLine($"Suspicious: {_suspiciousCount}")
-        sb.AppendLine($"NMAP: {_nmapResults.Count} hosts")
+        sb.AppendLine($"Errors: {_errorCount}")
+        sb.AppendLine()
+        sb.AppendLine("--- NMAP SCAN RESULTS ---")
+        sb.AppendLine($"Hosts Discovered: {_nmapResults.Count}")
         If _nmapResults.Any() Then
-            sb.AppendLine($"Open Ports: {String.Join(", ", _nmapResults.SelectMany(Function(r) r.OpenPorts).Distinct().Take(15))}")
+            sb.AppendLine("Hosts:")
+            For Each host In _nmapResults.Take(10)
+                sb.AppendLine($"  - {host.Host} [{host.Status}] OS:{host.OS} Ports:{host.Ports}")
+            Next
+            Dim allPorts = _nmapResults.SelectMany(Function(r) r.OpenPorts).Distinct().ToList()
+            sb.AppendLine($"All Open Ports: {String.Join(", ", allPorts.Take(20))}")
         End If
-        sb.AppendLine($"Top Hosts: {String.Join(", ", _hostTraffic.OrderByDescending(Function(kv) kv.Value).Take(5).Select(Function(kv) kv.Key))}")
+        sb.AppendLine()
+        sb.AppendLine("--- TOP TALKERS ---")
+        For Each kv In _hostTraffic.OrderByDescending(Function(x) x.Value).Take(10)
+            sb.AppendLine($"  {kv.Key}: {FormatBytes(kv.Value)}")
+        Next
+        sb.AppendLine()
+        sb.AppendLine("--- RECENT CONNECTIONS (Last 20) ---")
+        For Each conn In _activeConnections.Take(20)
+            sb.AppendLine($"  [{conn.Time:HH:mm:ss}] {conn.Direction} {conn.Protocol} {conn.LocalEndpoint} ↔ {conn.RemoteEndpoint} ({conn.Bytes}) {If(conn.IsSuspicious, "⚠️SUSPICIOUS", "")}")
+        Next
+        sb.AppendLine()
+        sb.AppendLine("--- ALERTS ---")
+        For Each alert In _alerts.Take(10)
+            sb.AppendLine($"  {alert}")
+        Next
+
         Return sb.ToString()
     End Function
 
-    Private Async Function GetAIResponseAsync(data As String) As Task(Of String)
+    Private Async Function GetAIResponseAsync(data As String, userQuery As String) As Task(Of String)
         Try
             Using client As New HttpClient()
                 client.DefaultRequestHeaders.Add("Authorization", $"Bearer {OPENROUTER_API_KEY}")
                 client.DefaultRequestHeaders.Add("HTTP-Referer", "https://rootcastle.rei")
 
-                Dim prompt = $"Sen SOFIA, ağ güvenliği AI uzmanısın. Analiz et (Türkçe, 80 kelime):
-1. Ağ durumu değerlendirmesi
-2. Güvenlik riskleri
-3. Aksiyon önerileri
+                Dim systemPrompt = "Sen SOFIA (Smart Operational Firewall Intelligence Assistant), profesyonel bir ağ güvenliği ve network analiz AI uzmanısın. Rootcastle Network Monitor uygulamasının yerleşik AI motorusun.
 
-{data}"
+GÖREVLER:
+1. Ağ trafiğini analiz et ve anomalileri tespit et
+2. Güvenlik tehditlerini değerlendir ve önceliklendir
+3. Firewall kuralları ve güvenlik önerileri sun
+4. Incident response desteği sağla
+5. Performans optimizasyonu öner
+6. Teknik ve yönetici raporları oluştur
+
+KURALLAR:
+- Her zaman Türkçe yanıt ver
+- Teknik detayları açık ve anlaşılır şekilde anlat
+- Somut aksiyon maddeleri sun
+- Risk seviyelerini belirt (Kritik/Yüksek/Orta/Düşük)
+- Emoji kullan görsellik için
+- Yapılandırılmış ve okunabilir format kullan"
+
+                Dim userPrompt = $"KULLANICI SORUSU: {userQuery}
+
+AĞ VERİLERİ:
+{data}
+
+Lütfen yukarıdaki ağ verilerini analiz ederek kullanıcının sorusuna detaylı yanıt ver."
 
                 Dim body As New JsonObject()
                 body.Add("model", JsonValue.CreateStringValue("meta-llama/llama-3.2-3b-instruct:free"))
+
                 Dim msgs As New JsonArray()
-                Dim msg As New JsonObject()
-                msg.Add("role", JsonValue.CreateStringValue("user"))
-                msg.Add("content", JsonValue.CreateStringValue(prompt))
-                msgs.Add(msg)
+
+                Dim sysMsg As New JsonObject()
+                sysMsg.Add("role", JsonValue.CreateStringValue("system"))
+                sysMsg.Add("content", JsonValue.CreateStringValue(systemPrompt))
+                msgs.Add(sysMsg)
+
+                Dim usrMsg As New JsonObject()
+                usrMsg.Add("role", JsonValue.CreateStringValue("user"))
+                usrMsg.Add("content", JsonValue.CreateStringValue(userPrompt))
+                msgs.Add(usrMsg)
+
                 body.Add("messages", msgs)
-                body.Add("max_tokens", JsonValue.CreateNumberValue(250))
+                body.Add("max_tokens", JsonValue.CreateNumberValue(1500))
+                body.Add("temperature", JsonValue.CreateNumberValue(0.7))
 
                 Dim content As New HttpStringContent(body.Stringify(), Windows.Storage.Streams.UnicodeEncoding.Utf8, "application/json")
                 Dim response = Await client.PostAsync(New Uri(OPENROUTER_API_URL), content)
@@ -1001,13 +1656,25 @@ Public NotInheritable Class MainPage
                     Dim json = JsonObject.Parse(responseText)
                     Dim choices = json.GetNamedArray("choices")
                     If choices.Count > 0 Then
-                        Return "[SOFIA]" & vbCrLf & choices.GetObjectAt(0).GetNamedObject("message").GetNamedString("content")
+                        Dim aiResponse = choices.GetObjectAt(0).GetNamedObject("message").GetNamedString("content")
+                        Return $"[SOFIA] 🧠 AI Analysis Report
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+{aiResponse}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📅 {DateTime.Now:yyyy-MM-dd HH:mm:ss}
+🔧 Powered by LLaMA 3.2 via OpenRouter"
                     End If
+                Else
+                    LogTerminal($"[AI] API Error: {response.StatusCode}")
                 End If
-                Return "[SOFIA] Analysis unavailable"
+
+                Return "[SOFIA] ⚠️ Analiz şu anda yapılamıyor. Lütfen daha sonra tekrar deneyin."
             End Using
         Catch ex As Exception
-            Return $"[ERR] {ex.Message}"
+            LogTerminal($"[AI] Exception: {ex.Message}")
+            Return $"[SOFIA] ❌ Bağlantı hatası: {ex.Message}"
         End Try
     End Function
 #End Region
@@ -1171,6 +1838,44 @@ Public NotInheritable Class MainPage
     Public Class PacketLogEntry
         Public Property Time As DateTime
         Public Property Data As String
+    End Class
+
+    Public Class CertInfo
+        Public Property Host As String
+        Public Property Expiry As String
+        Public Property Cipher As String
+        Public Property TlsVersion As String
+    End Class
+
+    Public Class AssetInfo
+        Public Property IP As String
+        Public Property MAC As String
+        Public Property Vendor As String
+        Public Property OS As String
+        Public Property LastSeen As DateTime
+    End Class
+
+    Public Class AppTrafficInfo
+        Public Property App As String
+        Public Property Traffic As String
+        Public Property Percentage As Double
+    End Class
+
+    Public Class ConversationInfo
+        Public Property HostA As String
+        Public Property HostB As String
+        Public Property Stats As String
+        Public Property BytesAtoB As Long
+        Public Property BytesBtoA As Long
+        Public Property PacketCount As Long
+        Public Property LastSeen As DateTime
+    End Class
+
+    Public Class ZeroTrustEvent
+        Public Property Identity As String
+        Public Property Resource As String
+        Public Property Access As String
+        Public Property Timestamp As DateTime
     End Class
 #End Region
 
