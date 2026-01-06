@@ -8,6 +8,7 @@ Imports System.Net.Sockets
 Imports System.Net
 Imports System.Text
 Imports System.Threading
+Imports System.IO
 Imports Windows.Storage
 Imports Windows.Storage.Pickers
 Imports Windows.Web.Http
@@ -17,6 +18,9 @@ Imports Windows.UI.Xaml.Media
 Imports Windows.UI.Text
 Imports Windows.UI.Xaml.Controls
 Imports Microsoft.VisualBasic
+Imports System.Linq
+Imports Windows.UI
+Imports App1
 
 Public NotInheritable Class MainPage
     Inherits Page
@@ -251,8 +255,16 @@ Public NotInheritable Class MainPage
             If ipv4 IsNot Nothing Then
                 Dim localIP = ipv4.Address.ToString()
                 LocalIPShortText.Text = localIP.Substring(localIP.LastIndexOf(".") + 1)
-                LocalIPText.Text = $"Kişisel IP: {localIP}"
-                RouterIPText.Text = $"Router IP: {gateway?.Address.ToString()}"
+
+                ' These controls are not present in XAML; use existing ones.
+                'LocalIPText.Text = $"Kişisel IP: {localIP}"
+                'RouterIPText.Text = $"Router IP: {gateway?.Address.ToString()}"
+
+                If gateway IsNot Nothing Then
+                    GatewayShortText.Text = gateway.Address.ToString().Split("."c).LastOrDefault()
+                Else
+                    GatewayShortText.Text = "-"
+                End If
             End If
 
             ' Clear previous topology data
@@ -303,7 +315,7 @@ Public NotInheritable Class MainPage
             If ipv4 IsNot Nothing Then
                 Dim localIP = ipv4.Address.ToString()
                 LocalIPShortText.Text = localIP.Substring(localIP.LastIndexOf(".") + 1)
-                LocalIPText.Text = $"Kişisel IP: {localIP}"
+                ' LocalIPText control is not present in XAML.
             End If
 
             LogTerminal($"[MON] Monitoring started on {_selectedInterface.Name}")
@@ -457,30 +469,35 @@ Public NotInheritable Class MainPage
                 .Text = $"↓{FormatBytes(_bytesPerSecIn)}/s  ↑{FormatBytes(_bytesPerSecOut)}/s",
                 .Foreground = New SolidColorBrush(Windows.UI.ColorHelper.FromArgb(255, 255, 255, 255)),
                 .FontSize = 10,
-                .FontFamily = New FontFamily("Consolas"),
-                .Background = New SolidColorBrush(Windows.UI.ColorHelper.FromArgb(200, 0, 20, 20))
+                .FontFamily = New FontFamily("Consolas")
             }
-            Canvas.SetLeft(statsText, w / 2 - 60)
-            Canvas.SetTop(statsText, centerY - 8)
-            TopologyCanvas.Children.Add(statsText)
+            Dim bg As New Border() With {
+                .Background = New SolidColorBrush(Windows.UI.ColorHelper.FromArgb(200, 0, 20, 20)),
+                .Padding = New Thickness(4),
+                .CornerRadius = New CornerRadius(2),
+                .Child = statsText
+            }
+            Canvas.SetLeft(bg, w / 2 - 60)
+            Canvas.SetTop(bg, centerY - 12)
+            TopologyCanvas.Children.Add(bg)
         Catch
         End Try
     End Sub
 
     Private Sub DrawTrafficGraph()
         Try
-            If TrafficCanvas.Children.Count > 0 Then
-                TrafficCanvas.Children.Clear()
+            ' XAML canvas name is `TrafficGraphCanvas`
+            If TrafficGraphCanvas.Children.Count > 0 Then
+                TrafficGraphCanvas.Children.Clear()
             End If
 
             Dim maxIn = _trafficHistoryIn.Max()
             Dim maxOut = _trafficHistoryOut.Max()
             Dim maxValue = Math.Max(maxIn, maxOut)
-
             If maxValue = 0 Then Return
 
-            Dim width = TrafficCanvas.ActualWidth
-            Dim height = TrafficCanvas.ActualHeight
+            Dim width = TrafficGraphCanvas.ActualWidth
+            Dim height = TrafficGraphCanvas.ActualHeight
             Dim barWidth = Math.Max(1, CInt(width / MAX_GRAPH_POINTS))
 
             For i = 0 To MAX_GRAPH_POINTS - 1
@@ -493,27 +510,26 @@ Public NotInheritable Class MainPage
                 Dim inBar = New Rectangle() With {
                     .Width = barWidth - 2,
                     .Height = inHeight,
-                    .Fill = New SolidColorBrush(Colors.Blue),
-                    .HorizontalAlignment = HorizontalAlignment.Left,
-                    .VerticalAlignment = VerticalAlignment.Bottom,
-                    .Margin = New Thickness(i * barWidth, 0, 0, 0)
+                    .Fill = New SolidColorBrush(Colors.Blue)
                 }
 
                 Dim outBar = New Rectangle() With {
                     .Width = barWidth - 2,
                     .Height = outHeight,
-                    .Fill = New SolidColorBrush(Colors.Red),
-                    .HorizontalAlignment = HorizontalAlignment.Left,
-                    .VerticalAlignment = VerticalAlignment.Bottom,
-                    .Margin = New Thickness(i * barWidth, 0, 0, 0)
+                    .Fill = New SolidColorBrush(Colors.Red)
                 }
 
-                TrafficCanvas.Children.Add(inBar)
-                TrafficCanvas.Children.Add(outBar)
+                Canvas.SetLeft(inBar, i * barWidth)
+                Canvas.SetTop(inBar, height - inHeight)
+
+                Canvas.SetLeft(outBar, i * barWidth)
+                Canvas.SetTop(outBar, height - outHeight)
+
+                TrafficGraphCanvas.Children.Add(inBar)
+                TrafficGraphCanvas.Children.Add(outBar)
             Next
 
-            ' Adjust canvas width to fit all bars
-            TrafficCanvas.Width = Math.Max(TrafficCanvas.ActualWidth, MAX_GRAPH_POINTS * 4)
+            TrafficGraphCanvas.Width = Math.Max(TrafficGraphCanvas.ActualWidth, MAX_GRAPH_POINTS * 4)
         Catch ex As Exception
             LogTerminal($"[ERR] Draw traffic graph: {ex.Message}")
         End Try
@@ -531,7 +547,7 @@ Public NotInheritable Class MainPage
                 .SourceIP = "192.168.1." & _random.Next(1, 255),
                 .DestIP = "192.168.1." & _random.Next(1, 255),
                 .Protocol = If(_random.Next(0, 2) = 0, "TCP", "UDP"),
-                .Length = CLong(_random.Next(50, 1500)),
+                .Length = CLng(_random.Next(50, 1500)),
                 .Info = "Test packet " & _packetCount
             }
 
@@ -542,11 +558,24 @@ Public NotInheritable Class MainPage
             UpdateActiveConnections(testPacket)
 
             ' Update firewall and threat detection
-            UpdateThreatDetection(testPacket)
+            If _suspiciousDetectionEnabled Then
+                UpdateThreatDetection(testPacket)
+            End If
 
             ' Log packet details
             Dim packetDetails = $"[{testPacket.Timestamp:HH:mm:ss}] {testPacket.Protocol} {testPacket.SourceIP} → {testPacket.DestIP} [{testPacket.Length} bytes] {testPacket.Info}"
             LogTerminal(packetDetails)
+
+            ' Update simple UI bindings list (Packet Capture)
+            ConnectionsListView.ItemsSource = Nothing
+            ConnectionsListView.ItemsSource = _recordedPackets.TakeLast(200).Select(Function(p)
+                                                                                        p.Id = p.Id
+                                                                                        Return p
+                                                                                    End Function).ToList()
+            ConnectionCountText.Text = $"[{_recordedPackets.Count} connections]"
+
+            PacketCountText.Text = _packetCount.ToString()
+
         Catch ex As Exception
             LogTerminal($"[ERR] Capture packet: {ex.Message}")
         End Try
@@ -636,11 +665,15 @@ Public NotInheritable Class MainPage
     Private Sub LogTerminal(message As String)
         Try
             Dim timeStamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
-            TerminalTextBox.Text += $"{timeStamp} - {message}{Environment.NewLine}"
+            Dim line = $"{timeStamp} - {message}" & Environment.NewLine
 
-            ' Auto-scroll to the latest message
-            TerminalTextBox.ScrollToEnd()
-        Catch ex As Exception
+            ' XAML terminal is `TerminalOutput` (TextBlock) inside a ScrollViewer.
+            TerminalOutput.Text &= line
+
+            If AutoScrollCheckBox IsNot Nothing AndAlso AutoScrollCheckBox.IsChecked.GetValueOrDefault(True) Then
+                TerminalScrollViewer?.ChangeView(Nothing, TerminalScrollViewer.ScrollableHeight, Nothing)
+            End If
+        Catch
             ' Ignore logging errors
         End Try
     End Sub
@@ -654,7 +687,13 @@ Public NotInheritable Class MainPage
             If _latencyHistory.Count > 10 Then _latencyHistory.RemoveAt(0)
 
             Dim avgLatency = _latencyHistory.Average()
+            _currentLatency = avgLatency
+
+            ' Left panel
             LatencyText.Text = $"{avgLatency:F1} ms"
+
+            ' QoS panel
+            QosLatencyText.Text = $"{avgLatency:F1} ms"
 
             ' Jitter
             If _latencyHistory.Count > 1 Then
@@ -665,15 +704,154 @@ Public NotInheritable Class MainPage
                 jitter /= (_latencyHistory.Count - 1)
                 _jitter = jitter
             End If
-            JitterText.Text = $"{_jitter:F1} ms"
+            QosJitterText.Text = $"{_jitter:F1} ms"
 
             ' Packet Loss (simulate 0.1% packet loss)
             _packetLoss = If(_random.NextDouble() < 0.001, 1, 0)
-            PacketLossText.Text = $"{_packetLoss}%"
+            QosLossText.Text = $"{_packetLoss}%"
+
+            ' Throughput (rough estimate)
+            _throughput = (_bytesPerSecIn + _bytesPerSecOut) * 8.0 / 1_000_000.0
+            QosThroughputText.Text = $"{_throughput:F2} Mbps"
         Catch ex As Exception
             LogTerminal($"[ERR] Update QoS metrics: {ex.Message}")
         End Try
     End Sub
+
+    Private Sub UpdateBandwidthDisplay()
+        Try
+            If _selectedInterface Is Nothing OrElse _selectedInterface.Speed <= 0 Then
+                BandwidthText.Text = "0%"
+                Return
+            End If
+
+            Dim usedBps = (_bytesPerSecIn + _bytesPerSecOut) * 8.0
+            Dim pct = Math.Min(100.0, (usedBps / _selectedInterface.Speed) * 100.0)
+            BandwidthText.Text = $"{pct:F1}%"
+        Catch
+            BandwidthText.Text = "0%"
+        End Try
+    End Sub
+
+    Private Function FormatBytes(value As Long) As String
+        Dim dbl = CDbl(Math.Max(0L, value))
+        Dim units = New String() {"B", "KB", "MB", "GB", "TB"}
+        Dim idx = 0
+        While dbl >= 1024 AndAlso idx < units.Length - 1
+            dbl /= 1024
+            idx += 1
+        End While
+        If idx = 0 Then Return $"{dbl:0} {units(idx)}"
+        Return $"{dbl:0.##} {units(idx)}"
+    End Function
+
+    Private Sub DrawTopology()
+        ' Minimal placeholder: topology is drawn dynamically in `DrawTopologyTraffic`.
+        ' Keep as a hook so calls from other routines compile.
+        DrawTopologyTraffic()
+    End Sub
+
+    Private Sub ShowAlert(message As String)
+        _alerts.Add(message)
+        If _alerts.Count > 200 Then _alerts.RemoveAt(0)
+        AlertsListView.ItemsSource = Nothing
+        AlertsListView.ItemsSource = _alerts.ToList()
+        AlertCountText.Text = $"[{_alerts.Count}]"
+    End Sub
+
+    Private Sub StartMonitorButton_Click(sender As Object, e As RoutedEventArgs)
+        If _isMonitoring Then
+            StopMonitoring()
+            StartMonitorButton.Content = "▶ START"
+            MonitorStatusText.Text = "●"
+            MonitorStatusText.Foreground = New SolidColorBrush(Windows.UI.ColorHelper.FromArgb(255, 255, 170, 0))
+            StatusText.Text = "[STOPPED]"
+        Else
+            StartMonitoring()
+            StartMonitorButton.Content = "■ STOP"
+            MonitorStatusText.Text = "●"
+            MonitorStatusText.Foreground = New SolidColorBrush(Windows.UI.ColorHelper.FromArgb(255, 0, 255, 0))
+            StatusText.Text = "[MONITORING]"
+        End If
+    End Sub
+
+    Private Sub SuspiciousPacketCheckBox_Checked(sender As Object, e As RoutedEventArgs)
+        _suspiciousDetectionEnabled = True
+        LogTerminal("[SEC] Suspicious detection enabled")
+    End Sub
+
+    Private Sub SuspiciousPacketCheckBox_Unchecked(sender As Object, e As RoutedEventArgs)
+        _suspiciousDetectionEnabled = False
+        LogTerminal("[SEC] Suspicious detection disabled")
+    End Sub
+
+    Private Sub ClearTerminalButton_Click(sender As Object, e As RoutedEventArgs)
+        TerminalOutput.Text = ""
+    End Sub
+
+    Private Sub FilterComboBox_SelectionChanged(sender As Object, e As SelectionChangedEventArgs)
+        ' UI-only placeholder; filtering can be layered on top of packet logs.
+    End Sub
+
+    Private Sub RecordButton_Click(sender As Object, e As RoutedEventArgs)
+        _isRecording = Not _isRecording
+        RecordButton.Content = If(_isRecording, "■ STOP REC", "● REC")
+        RecordingStatusText.Text = If(_isRecording, "[REC]", "")
+        LogTerminal(If(_isRecording, "[REC] Recording started", "[REC] Recording stopped"))
+    End Sub
+
+    Private Sub PacketFilterTextBox_KeyDown(sender As Object, e As KeyRoutedEventArgs)
+        If e.Key = Windows.System.VirtualKey.Enter Then
+            ApplyFilterButton_Click(sender, Nothing)
+        End If
+    End Sub
+
+    Private Sub ApplyFilterButton_Click(sender As Object, e As RoutedEventArgs)
+        _filterProtocol = If(String.IsNullOrWhiteSpace(PacketFilterTextBox.Text), "ALL", PacketFilterTextBox.Text.Trim().ToUpperInvariant())
+        LogTerminal($"[UI] Filter set: {_filterProtocol}")
+    End Sub
+
+    Private Sub PacketListView_SelectionChanged(sender As Object, e As SelectionChangedEventArgs)
+        Dim selected = TryCast(ConnectionsListView.SelectedItem, ConnectionInfo)
+        If selected Is Nothing Then Return
+
+        PacketDetailsPanel.Visibility = Visibility.Visible
+        PacketDetailsText.Text = $"[{selected.Timestamp:HH:mm:ss}] {selected.Protocol} {selected.SourceIP} → {selected.DestIP}{vbCrLf}Len: {selected.Length} bytes{vbCrLf}{selected.Info}"
+    End Sub
+
+    Private Sub ExportReportButton_Click(sender As Object, e As RoutedEventArgs)
+        ' Placeholder for export wiring; keep feature surface without breaking build.
+        ShowAlert("Export not implemented in this build.")
+    End Sub
+
+    Private Sub SecurityDashboardButton_Click(sender As Object, e As RoutedEventArgs)
+        MainPivot.SelectedIndex = 2
+    End Sub
+
+    Private Sub TopologyButton_Click(sender As Object, e As RoutedEventArgs)
+        MainPivot.SelectedIndex = 0
+    End Sub
+
+    Private Sub AdvancedSettingsButton_Click(sender As Object, e As RoutedEventArgs)
+        MainPivot.SelectedIndex = 3
+    End Sub
+
+    Private Sub SendTcpButton_Click(sender As Object, e As RoutedEventArgs)
+        ShowAlert("TCP sender not implemented in this build.")
+    End Sub
+
+    Private Sub SendUdpButton_Click(sender As Object, e As RoutedEventArgs)
+        ShowAlert("UDP sender not implemented in this build.")
+    End Sub
+
+    Private Sub PingButton_Click(sender As Object, e As RoutedEventArgs)
+        ShowAlert("Ping not implemented in this build.")
+    End Sub
+
+    Private Sub TraceRouteButton_Click(sender As Object, e As RoutedEventArgs)
+        ShowAlert("Traceroute not implemented in this build.")
+    End Sub
+
 #End Region
 
 #Region "SOFIA AI"
@@ -704,6 +882,7 @@ Public NotInheritable Class MainPage
                            If(_selectedLanguage = "ES", "Español",
                            If(_selectedLanguage = "JP", "日本語",
                            If(_selectedLanguage = "CN", "中文", "Unknown")))))))
+
             AIModelInfoText.Text = $"Selected: {_selectedAIModel} | Language: {langName}"
         Catch
         End Try
@@ -1091,7 +1270,6 @@ Your API key is invalid or expired.
 
             Dim baseIP = $"{parts(0)}.{parts(1)}.{parts(2)}."
             Dim tasks As New List(Of Task)
-            Dim foundCount = 0
 
             For i = 1 To 254
                 If _nmapCancellationTokenSource.IsCancellationRequested Then Exit For
@@ -1140,7 +1318,6 @@ Your API key is invalid or expired.
                 Dim reply = Await ping.SendPingAsync(ip, 500)
                 If reply.Status = IPStatus.Success Then
                     SyncLock _nmapResults
-                        ' Check if already exists
                         If Not _nmapResults.Any(Function(r) r.Host = ip) Then
                             _nmapResults.Add(New NmapHostResult With {
                                 .Host = ip,
@@ -1154,17 +1331,15 @@ Your API key is invalid or expired.
                 End If
             End Using
         Catch
-            ' Ignore ping failures
         End Try
     End Function
 
     Private Async Function ScanHostAsync(ip As String, ports As Integer(), scanType As String, token As CancellationToken) As Task
-        ' First check if host is alive
         Try
             Using ping As New Ping()
                 Dim reply = Await ping.SendPingAsync(ip, 1000)
                 If reply.Status <> IPStatus.Success Then
-                    Return ' Host not responding
+                    Return
                 End If
             End Using
         Catch
@@ -1176,7 +1351,7 @@ Your API key is invalid or expired.
         Dim result As New NmapHostResult With {
             .Host = ip,
             .Status = "UP",
-            .openPorts = New List(Of Integer),
+            .OpenPorts = New List(Of Integer),
             .OS = ""
         }
 
@@ -1185,7 +1360,6 @@ Your API key is invalid or expired.
 
         Dim openPorts As New List(Of String)
 
-        ' Scan ports
         For Each port In ports
             If token.IsCancellationRequested Then Exit For
 
@@ -1211,21 +1385,17 @@ Your API key is invalid or expired.
                     client.Close()
                 End Using
             Catch
-                ' Port closed or filtered
             End Try
         Next
 
-        ' OS Detection
         If scanType = "OS Detection" OrElse scanType = "Full Scan" OrElse scanType = "Service Scan" Then
             result.OS = Await DetectOSAsync(ip)
         End If
 
         result.Ports = If(openPorts.Count > 0, String.Join(", ", openPorts), "No open ports")
 
-        ' Add to results if has open ports or if it's a ping-only scan
         If result.OpenPorts.Count > 0 OrElse scanType = "Quick Scan" Then
             SyncLock _nmapResults
-                ' Update existing or add new
                 Dim existing = _nmapResults.FirstOrDefault(Function(r) r.Host = ip)
                 If existing IsNot Nothing Then
                     existing.Ports = result.Ports
@@ -1315,7 +1485,6 @@ Your API key is invalid or expired.
             target = target.Trim()
 
             If target.Contains("/24") Then
-                ' CIDR notation: 192.168.1.0/24
                 Dim baseIP = target.Replace("/24", "").Trim().Split("."c)
                 If baseIP.Length = 4 Then
                     For i = 1 To 254
@@ -1323,7 +1492,6 @@ Your API key is invalid or expired.
                     Next
                 End If
             ElseIf target.Contains("-") Then
-                ' Range notation: 192.168.1.1-254
                 Dim parts = target.Split("."c)
                 If parts.Length = 4 AndAlso parts(3).Contains("-") Then
                     Dim rangeParts = parts(3).Split("-"c)
@@ -1336,7 +1504,6 @@ Your API key is invalid or expired.
                     targets.Add(target)
                 End If
             Else
-                ' Single IP
                 targets.Add(target)
             End If
         Catch ex As Exception
@@ -1371,3 +1538,5 @@ Your API key is invalid or expired.
         End If
     End Sub
 #End Region
+
+End Class
