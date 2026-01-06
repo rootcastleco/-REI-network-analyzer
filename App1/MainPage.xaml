@@ -131,7 +131,11 @@
                     <Button Content="🔍 SCAN" Style="{StaticResource AlertButtonStyle}" Click="NmapMenuButton_Click" ToolTipService.ToolTip="NMAP Scanner"/>
                     <Button Content="📊 EXPORT" Style="{StaticResource BlueButtonStyle}" Click="ExportReportButton_Click" ToolTipService.ToolTip="Export Report"/>
                     <Button Content="🔒" Style="{StaticResource MatrixButtonStyle}" Click="SecurityDashboardButton_Click" ToolTipService.ToolTip="Security"/>
+                    <Button Content="🗺️" Style="{StaticResource MatrixButtonStyle}" Click="TopologyButton_Click" ToolTipService.ToolTip="Network Topology"/>
                     <Button Content="⚙️" Style="{StaticResource MatrixButtonStyle}" Click="AdvancedSettingsButton_Click" ToolTipService.ToolTip="Settings"/>
+                    <CheckBox x:Name="SuspiciousPacketCheckBox" Checked="SuspiciousPacketCheckBox_Checked" Unchecked="SuspiciousPacketCheckBox_Unchecked" MinWidth="0" ToolTipService.ToolTip="Enable Suspicious Detection">
+                        <TextBlock Text="🚨" FontSize="14"/>
+                    </CheckBox>
                 </StackPanel>
                 <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
                     <TextBlock x:Name="MonitorStatusText" Text="●" Foreground="#FFAA00" FontFamily="Consolas" FontSize="20" VerticalAlignment="Center" Margin="0,0,8,0"/>
@@ -155,6 +159,71 @@
             <PivotItem Header="📡 MONITOR">
                 <ScrollViewer>
                     <StackPanel Margin="4" Spacing="8">
+                        <!-- LIVE NETWORK TOPOLOGY - YENİ -->
+                        <Border Style="{StaticResource MatrixBorderStyle}" BorderBrush="#00FFFF">
+                            <StackPanel>
+                                <Grid Margin="0,0,0,8">
+                                    <TextBlock Text="► LIVE NETWORK TOPOLOGY" FontSize="14" Foreground="#00FFFF" FontFamily="Consolas" FontWeight="Bold"/>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
+                                        <TextBlock x:Name="ExternalIPText" Text="WAN: Checking..." Foreground="#FF6600" FontFamily="Consolas" FontSize="11" FontWeight="Bold"/>
+                                        <TextBlock x:Name="ActiveHostsText" Text="Hosts: 0" Foreground="#00FF00" FontFamily="Consolas" FontSize="11"/>
+                                    </StackPanel>
+                                </Grid>
+                                <Grid Height="120">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="100"/>
+                                    </Grid.ColumnDefinitions>
+                                    <!-- Internet -->
+                                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                        <Border Background="#220000" BorderBrush="#FF6600" BorderThickness="2" CornerRadius="50" Width="60" Height="60" Padding="5">
+                                            <TextBlock Text="🌐" FontSize="28" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                        <TextBlock Text="INTERNET" Foreground="#FF6600" FontFamily="Consolas" FontSize="10" HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                                        <TextBlock x:Name="InternetStatusText" Text="●" Foreground="#00FF00" FontFamily="Consolas" FontSize="14" HorizontalAlignment="Center"/>
+                                    </StackPanel>
+                                    <!-- Traffic Flow Visualization -->
+                                    <Canvas x:Name="TopologyCanvas" Grid.Column="1" Background="#001010">
+                                        <!-- Lines and traffic will be drawn here -->
+                                    </Canvas>
+                                    <!-- Local Network -->
+                                    <StackPanel Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                        <Border Background="#001500" BorderBrush="#00FF00" BorderThickness="2" CornerRadius="50" Width="60" Height="60" Padding="5">
+                                            <TextBlock Text="🖥️" FontSize="28" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                        <TextBlock Text="LOCAL" Foreground="#00FF00" FontFamily="Consolas" FontSize="10" HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                                        <TextBlock x:Name="LocalIPShortText" Text="-.-.-.1" Foreground="#00FFFF" FontFamily="Consolas" FontSize="10" HorizontalAlignment="Center"/>
+                                    </StackPanel>
+                                </Grid>
+                                <!-- Traffic Stats Bar -->
+                                <Grid Margin="0,8,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel HorizontalAlignment="Center">
+                                        <TextBlock Text="↓ DOWNLOAD" Foreground="#666666" FontFamily="Consolas" FontSize="9"/>
+                                        <TextBlock x:Name="DownloadSpeedText" Text="0 KB/s" Foreground="#00FF00" FontFamily="Consolas" FontSize="14" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+                                        <TextBlock Text="↑ UPLOAD" Foreground="#666666" FontFamily="Consolas" FontSize="9"/>
+                                        <TextBlock x:Name="UploadSpeedText" Text="0 KB/s" Foreground="#00FFFF" FontFamily="Consolas" FontSize="14" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                                        <TextBlock Text="GATEWAY" Foreground="#666666" FontFamily="Consolas" FontSize="9"/>
+                                        <TextBlock x:Name="GatewayShortText" Text="-" Foreground="#FFAA00" FontFamily="Consolas" FontSize="14" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="3" HorizontalAlignment="Center">
+                                        <TextBlock Text="CONNECTIONS" Foreground="#666666" FontFamily="Consolas" FontSize="9"/>
+                                        <TextBlock x:Name="ActiveConnectionsText" Text="0" Foreground="#FF00FF" FontFamily="Consolas" FontSize="14" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
                         <!-- Live Traffic Graph -->
                         <Border Style="{StaticResource MatrixBorderStyle}">
                             <StackPanel>
@@ -599,12 +668,51 @@
             <PivotItem Header="🧠 SOFIA AI">
                 <ScrollViewer>
                     <StackPanel Margin="4" Spacing="8">
+                        <!-- AI Settings Panel - YENİ -->
+                        <Border Style="{StaticResource MatrixBorderStyle}" BorderBrush="#00AACC">
+                            <StackPanel>
+                                <TextBlock Text="► AI SETTINGS" FontSize="14" Foreground="#00CCFF" FontFamily="Consolas" FontWeight="Bold" Margin="0,0,0,10"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Margin="0,0,8,0">
+                                        <TextBlock Text="AI Model:" Foreground="#888888" FontFamily="Consolas" FontSize="11" Margin="0,0,0,4"/>
+                                        <ComboBox x:Name="AIModelComboBox" Style="{StaticResource MatrixComboBoxStyle}" SelectionChanged="AIModelComboBox_SelectionChanged">
+                                            <ComboBoxItem Content="LLaMA 3.2 3B (Free)" Tag="meta-llama/llama-3.2-3b-instruct:free" IsSelected="True"/>
+                                            <ComboBoxItem Content="LLaMA 3.1 8B (Free)" Tag="meta-llama/llama-3.1-8b-instruct:free"/>
+                                            <ComboBoxItem Content="Mistral 7B (Free)" Tag="mistralai/mistral-7b-instruct:free"/>
+                                            <ComboBoxItem Content="Gemma 2 9B (Free)" Tag="google/gemma-2-9b-it:free"/>
+                                            <ComboBoxItem Content="Qwen 2.5 7B (Free)" Tag="qwen/qwen-2.5-7b-instruct:free"/>
+                                            <ComboBoxItem Content="DeepSeek V3 (Paid)" Tag="deepseek/deepseek-chat"/>
+                                            <ComboBoxItem Content="GPT-4o Mini (Paid)" Tag="openai/gpt-4o-mini"/>
+                                            <ComboBoxItem Content="Claude 3.5 Haiku (Paid)" Tag="anthropic/claude-3.5-haiku"/>
+                                        </ComboBox>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                                        <TextBlock Text="Output Language:" Foreground="#888888" FontFamily="Consolas" FontSize="11" Margin="0,0,0,4"/>
+                                        <ComboBox x:Name="AILanguageComboBox" Style="{StaticResource MatrixComboBoxStyle}" SelectionChanged="AILanguageComboBox_SelectionChanged">
+                                            <ComboBoxItem Content="🇹🇷 Türkçe" Tag="TR" IsSelected="True"/>
+                                            <ComboBoxItem Content="🇺🇸 English" Tag="EN"/>
+                                            <ComboBoxItem Content="🇩🇪 Deutsch" Tag="DE"/>
+                                            <ComboBoxItem Content="🇫🇷 Français" Tag="FR"/>
+                                            <ComboBoxItem Content="🇪🇸 Español" Tag="ES"/>
+                                            <ComboBoxItem Content="🇯🇵 日本語" Tag="JP"/>
+                                            <ComboBoxItem Content="🇨🇳 中文" Tag="CN"/>
+                                        </ComboBox>
+                                    </StackPanel>
+                                </Grid>
+                                <TextBlock x:Name="AIModelInfoText" Text="Selected: meta-llama/llama-3.2-3b-instruct:free | Language: Türkçe" Foreground="#006688" FontFamily="Consolas" FontSize="10" Margin="0,8,0,0"/>
+                            </StackPanel>
+                        </Border>
+
                         <!-- AI Chat Interface -->
                         <Border Style="{StaticResource MatrixBorderStyle}" BorderBrush="#00CCFF">
                             <StackPanel>
                                 <Grid Margin="0,0,0,10">
                                     <TextBlock Text="► SOFIA AI ASSISTANT" FontSize="16" Foreground="#00CCFF" FontFamily="Consolas" FontWeight="Bold"/>
-                                    <TextBlock Text="Powered by LLaMA 3.2" Foreground="#006688" FontFamily="Consolas" FontSize="10" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                    <TextBlock x:Name="AIStatusText" Text="Ready" Foreground="#006688" FontFamily="Consolas" FontSize="10" HorizontalAlignment="Right" VerticalAlignment="Center"/>
                                 </Grid>
                                 <!-- AI Response Area -->
                                 <Border Background="#001520" BorderBrush="#00AACC" BorderThickness="2" CornerRadius="8" Padding="12" MinHeight="200" Margin="0,0,0,10">
@@ -618,6 +726,8 @@
 • 📝 Firewall kural önerileri
 • 📈 Rapor ve özet oluşturma
 
+⚙️ Ayarlardan AI modelini ve çıktı dilini değiştirebilirsiniz.
+
 Nasıl yardımcı olabilirim?" 
                                                    Foreground="#00CCFF" FontFamily="Consolas" FontSize="13" TextWrapping="Wrap" LineHeight="22"/>
                                     </ScrollViewer>
@@ -629,9 +739,9 @@ Nasıl yardımcı olabilirim?"
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
                                     <TextBox x:Name="AIQueryTextBox" Style="{StaticResource MatrixTextBoxStyle}" 
-                                             PlaceholderText="Sorunuzu yazın... (örn: 'Son trafiği analiz et' veya 'Güvenlik raporu oluştur')"
+                                             PlaceholderText="Sorunuzu yazın... (örn: 'Analyze traffic' veya 'Güvenlik raporu oluştur')"
                                              KeyDown="AIQueryTextBox_KeyDown"/>
-                                    <Button Grid.Column="1" Content="🚀 GÖNDER" Style="{StaticResource AIButtonStyle}" Margin="8,0,0,0" Click="AIAnalyzeButton_Click"/>
+                                    <Button Grid.Column="1" Content="🚀 SEND" Style="{StaticResource AIButtonStyle}" Margin="8,0,0,0" Click="AIAnalyzeButton_Click"/>
                                 </Grid>
                             </StackPanel>
                         </Border>
